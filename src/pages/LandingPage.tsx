@@ -3,6 +3,55 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, CheckCircle2, Zap } from 'lucide-react';
 import BackgroundBeams from '@/components/ui/background-beams';
 import { AuthModal } from '@/components/ui/auth-modal';
+import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+
+const features = [
+    {
+        Icon: Calendar,
+        name: "Unified Calendar",
+        description: "Pull events from Google, Outlook, and more into a single view.",
+        href: "/",
+        cta: "Learn more",
+        background: <img src="/calendar-image.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
+    },
+    {
+        Icon: CheckCircle2,
+        name: "Task Consolidation",
+        description: "Turn emails, Slack messages, and Jira tickets into tasks instantly.",
+        href: "/",
+        cta: "Learn more",
+        background: <img src="/task-consolidation.jpg" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Task Consolidation" />,
+        className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
+    },
+    {
+        Icon: Zap,
+        name: "Command Bar",
+        description: "Navigate everything with your keyboard. Speed is our priority.",
+        href: "/",
+        cta: "Learn more",
+        background: <img src="/command-bar.png" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Command Bar" />,
+        className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
+    },
+    {
+        Icon: ArrowRight,
+        name: "Focus Mode",
+        description: "Enter a distraction-free environment to get deep work done.",
+        href: "/",
+        cta: "Learn more",
+        background: <img src="/focus-image.png" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
+    },
+    {
+        Icon: CheckCircle2,
+        name: "Automations",
+        description: "Automate repetitive tasks with custom workflows.",
+        href: "/",
+        cta: "Learn more",
+        background: <img src="/automation-image.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
+    },
+];
 
 const LandingPage = () => {
     const [authOpen, setAuthOpen] = useState(false);
@@ -44,38 +93,11 @@ const LandingPage = () => {
 
             {/* Features Grid */}
             <section className="py-20 container mx-auto px-4">
-                <div className="grid md:grid-cols-3 gap-8">
-                    {[
-                        {
-                            icon: <Calendar className="w-6 h-6" />,
-                            title: "Unified Calendar",
-                            description: "Pull events from Google, Outlook, and more into a single view."
-                        },
-                        {
-                            icon: <CheckCircle2 className="w-6 h-6" />,
-                            title: "Task Consolidation",
-                            description: "Turn emails, Slack messages, and Jira tickets into tasks instantly."
-                        },
-                        {
-                            icon: <Zap className="w-6 h-6" />,
-                            title: "Command Bar",
-                            description: "Navigate everything with your keyboard. Speed is our priority."
-                        }
-                    ].map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                            className="border border-border p-6 rounded-lg hover:border-primary/50 transition-colors"
-                        >
-                            <div className="mb-4 p-3 bg-secondary w-fit rounded-md">{feature.icon}</div>
-                            <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                            <p className="text-muted-foreground">{feature.description}</p>
-                        </motion.div>
+                <BentoGrid className="lg:grid-rows-2">
+                    {features.map((feature) => (
+                        <BentoCard key={feature.name} {...feature} />
                     ))}
-                </div>
+                </BentoGrid>
             </section>
 
             {/* Social Proof / Trusted By */}
