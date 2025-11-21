@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 const PricingPage = () => {
     return (
         <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden">
-            <BackgroundBeams />
+            <BackgroundBeams className="opacity-70" />
             <div className="relative z-10 container mx-auto px-4 md:px-6 text-center max-w-2xl">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
