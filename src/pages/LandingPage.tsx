@@ -4,6 +4,13 @@ import { ArrowRight, Calendar, CheckCircle2, Zap } from 'lucide-react';
 import BackgroundBeams from '@/components/ui/background-beams';
 import { AuthModal } from '@/components/ui/auth-modal';
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import {
+    CalendarAnimation,
+    TaskConsolidationAnimation,
+    CommandBarAnimation,
+    FocusModeAnimation,
+    AutomationsAnimation
+} from '@/components/ui/bento-animations';
 
 const features = [
     {
@@ -12,7 +19,7 @@ const features = [
         description: "Pull events from Google, Outlook, and more into a single view.",
         href: "/",
         cta: "Learn more",
-        background: <img src="/calendar-image.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        background: <CalendarAnimation />,
         className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
     },
     {
@@ -21,7 +28,7 @@ const features = [
         description: "Turn emails, Slack messages, and Jira tickets into tasks instantly.",
         href: "/",
         cta: "Learn more",
-        background: <img src="/task-consolidation.jpg" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Task Consolidation" />,
+        background: <TaskConsolidationAnimation />,
         className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
     },
     {
@@ -30,7 +37,7 @@ const features = [
         description: "Navigate everything with your keyboard. Speed is our priority.",
         href: "/",
         cta: "Learn more",
-        background: <img src="/command-bar.png" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="Command Bar" />,
+        background: <CommandBarAnimation />,
         className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
     },
     {
@@ -39,7 +46,7 @@ const features = [
         description: "Enter a distraction-free environment to get deep work done.",
         href: "/",
         cta: "Learn more",
-        background: <img src="/focus-image.png" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        background: <FocusModeAnimation />,
         className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
     },
     {
@@ -48,7 +55,7 @@ const features = [
         description: "Automate repetitive tasks with custom workflows.",
         href: "/",
         cta: "Learn more",
-        background: <img src="/automation-image.jpg" className="absolute inset-0 w-full h-full object-cover" alt="" />,
+        background: <AutomationsAnimation />,
         className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
     },
 ];

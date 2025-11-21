@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import BackgroundBeams from "@/components/ui/background-beams";
-import { Input } from "@/components/ui/input";
+import { AuthModal } from "@/components/ui/auth-modal";
 
 
 const PricingPage = () => {
+    const [authOpen, setAuthOpen] = useState(false);
+
     return (
         <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden">
             <BackgroundBeams className="opacity-70" />
@@ -21,13 +25,17 @@ const PricingPage = () => {
                     <p className="text-xl text-muted-foreground mb-8">
                         Choose the plan that fits your workflow. All plans include unlimited access to core features.
                     </p>
-                    <Input
-                        type="email"
-                        placeholder="Enter your email for a quote"
-                        className="w-full max-w-md mx-auto bg-white border-neutral-200 text-neutral-900 placeholder:text-neutral-500 focus-visible:ring-neutral-900"
-                    />
+                    <div className="flex justify-center">
+                        <button
+                            onClick={() => setAuthOpen(true)}
+                            className="bg-primary text-primary-foreground px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group"
+                        >
+                            Sign Up <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
                 </motion.div>
             </div>
+            <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
         </div>
     );
 };
