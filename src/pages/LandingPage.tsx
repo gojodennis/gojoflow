@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, CheckCircle2, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import BackgroundBeams from '@/components/ui/background-beams';
+import { AuthModal } from '@/components/ui/auth-modal';
 
 const LandingPage = () => {
+    const [authOpen, setAuthOpen] = useState(false);
+
     return (
 
         <div className="flex flex-col min-h-screen">
@@ -25,9 +28,12 @@ const LandingPage = () => {
                             Minimal, fast, and keyboard-centric.
                         </p>
                         <div className="flex justify-center gap-4">
-                            <Link to="/signup" className="bg-primary text-primary-foreground px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group">
-                                Start for free <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                            <button
+                                onClick={() => setAuthOpen(true)}
+                                className="bg-primary text-primary-foreground px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group"
+                            >
+                                Sign Up <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
                             <button className="border border-input bg-background hover:bg-accent hover:text-accent-foreground px-8 py-4 rounded-md text-lg font-medium transition-colors">
                                 Watch Demo
                             </button>
@@ -83,6 +89,8 @@ const LandingPage = () => {
                     <span className="font-bold text-xl">LINEAR</span>
                 </div>
             </section>
+
+            <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
         </div>
     );
 };
