@@ -94,7 +94,7 @@ export const CommandBarAnimation = () => {
                     </div>
 
                     <div className="p-2">
-                        {commands.map((cmd, i) => (
+                        {commands.map((cmd) => (
                             <div
                                 key={cmd}
                                 className="flex items-center gap-2 p-2 text-sm text-neutral-300"

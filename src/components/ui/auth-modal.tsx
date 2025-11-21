@@ -41,6 +41,25 @@ export function AuthModal(props: AuthModalProps) {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        try {
+            setLoading(true);
+            setMessage(null);
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/`,
+                },
+            });
+
+            if (error) throw error;
+        } catch (error: any) {
+            setMessage({ type: 'error', text: error.message || 'An error occurred' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <Modal {...props}>
             <ModalContent>
@@ -57,6 +76,8 @@ export function AuthModal(props: AuthModalProps) {
                             type="button"
                             variant="outline"
                             className="animate-in fade-in w-full duration-300"
+                            onClick={handleGoogleSignIn}
+                            disabled={loading}
                         >
                             <GoogleIcon className="w-4 h-4 me-2" />
                             <span>Continue With Google</span>
