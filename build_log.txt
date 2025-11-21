@@ -1,0 +1,16 @@
+[36mvite v7.2.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 3 modules transformed.
+[31m✗[39m Build failed in 525ms
+[31merror during build:
+[31m[vite:css] [postcss] It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin. The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration.[31m
+file: [36mC:/Users/admin/projects/gojoflow/src/index.css:undefined:NaN[31m
+    at at (C:\Users\admin\projects\gojoflow\node_modules\tailwindcss\dist\lib.js:38:1629)
+    at LazyResult.runOnRoot (C:\Users\admin\projects\gojoflow\node_modules\postcss\lib\lazy-result.js:361:16)
+    at LazyResult.runAsync (C:\Users\admin\projects\gojoflow\node_modules\postcss\lib\lazy-result.js:290:26)
+    at async runPostCSS (file:///C:/Users/admin/projects/gojoflow/node_modules/vite/dist/node/chunks/config.js:30793:19)
+    at async compilePostCSS (file:///C:/Users/admin/projects/gojoflow/node_modules/vite/dist/node/chunks/config.js:30777:6)
+    at async compileCSS (file:///C:/Users/admin/projects/gojoflow/node_modules/vite/dist/node/chunks/config.js:30707:26)
+    at async Object.handler (file:///C:/Users/admin/projects/gojoflow/node_modules/vite/dist/node/chunks/config.js:30240:54)
+    at async transform (file:///C:/Users/admin/projects/gojoflow/node_modules/rollup/dist/es/shared/node-entry.js:21163:16)
+    at async ModuleLoader.addModuleSource (file:///C:/Users/admin/projects/gojoflow/node_modules/rollup/dist/es/shared/node-entry.js:21377:36)[39m
