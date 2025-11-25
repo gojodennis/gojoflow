@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { useTaskContext, type Task } from "@/components/providers/TaskContext"
+import { predictEnergyLevel } from "@/lib/ai-utils"
 
 function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle: (id: string) => void, onDelete: (id: string) => void, onFocus: (id: string) => void }) {
     return (
@@ -75,7 +76,6 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
 interface TaskListProps {
     onEnterFocus?: (taskId: string) => void
 }
-
 export function TaskList({ onEnterFocus }: TaskListProps) {
     const { user } = useAuth()
     const { tasks, loading, createTask, toggleTask, deleteTask } = useTaskContext()
@@ -88,7 +88,7 @@ export function TaskList({ onEnterFocus }: TaskListProps) {
         try {
             await createTask({
                 title: newTaskTitle,
-                energy_level: 'medium',
+                energy_level: predictEnergyLevel(newTaskTitle),
                 duration: 30,
                 completed: false,
             })
