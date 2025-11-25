@@ -41,7 +41,7 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
                         task.energy_level === "high" && "text-red-400",
                         task.energy_level === "medium" && "text-yellow-400",
                         task.energy_level === "low" && "text-green-400",
-                        task.energy_level === "shizo" && "text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-pulse"
+                        task.energy_level === "shizo" && "animate-[shizo-glow_2s_ease-in-out_infinite]"
                     )}>
                         {task.energy_level}
                     </span>
