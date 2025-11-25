@@ -1,13 +1,8 @@
 
-export type EnergyLevel = 'low' | 'medium' | 'high' | 'shizo';
+export type EnergyLevel = 'low' | 'medium' | 'high';
 
 export function predictEnergyLevel(title: string): EnergyLevel {
     const lowerTitle = title.toLowerCase();
-
-    // Check for shizo keyword first
-    if (lowerTitle.includes('meow')) {
-        return 'shizo';
-    }
 
     const highEnergyKeywords = [
         'workout', 'run', 'gym', 'exercise', 'training',

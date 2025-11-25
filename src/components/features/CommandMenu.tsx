@@ -50,7 +50,7 @@ export function CommandMenu() {
             await createTask({
                 title: newTask.title,
                 duration: parseInt(newTask.duration) || 30,
-                energy_level: newTask.energy as "low" | "medium" | "high" | "shizo",
+                energy_level: newTask.energy as "low" | "medium" | "high",
                 completed: false,
             })
 

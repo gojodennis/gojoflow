@@ -41,7 +41,7 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
                         task.energy_level === "high" && "text-red-400",
                         task.energy_level === "medium" && "text-yellow-400",
                         task.energy_level === "low" && "text-green-400",
-                        task.energy_level === "shizo" && "animate-[shizo-glow_2s_ease-in-out_infinite]"
+                        task.title.toLowerCase().includes("meow") && "animate-[shizo-glow_2s_ease-in-out_infinite] text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)]"
                     )}>
                         {task.energy_level}
                     </span>
@@ -191,7 +191,7 @@ export function TaskList({ onEnterFocus }: TaskListProps) {
                     </form>
                 </div>
 
-                <ScrollArea className="flex-1 p-4">
+                <ScrollArea className="flex-1 p-4" showScrollBar={false}>
                     <div className="flex flex-col gap-2">
                         {activeTasks.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
