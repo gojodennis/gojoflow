@@ -7,7 +7,7 @@ import { useAuth } from './AuthProvider'
 export interface Task {
     id: string
     title: string
-    energy_level: "low" | "medium" | "high"
+    energy_level: "low" | "medium" | "high" | "shizo"
     duration: number // minutes
     completed: boolean
     created_at: string

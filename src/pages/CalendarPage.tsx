@@ -4,7 +4,7 @@ import { CalendarPlaceholder } from "@/components/features/CalendarPlaceholder"
 
 export default function CalendarPage() {
     return (
-        <div className="h-[calc(100vh-4rem)] bg-background">
+        <div className="h-full bg-background">
             <CalendarPlaceholder />
         </div>
     )

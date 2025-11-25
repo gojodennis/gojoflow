@@ -15,7 +15,7 @@ export default function DashboardPage() {
 
     if (focusTaskId) {
         return (
-            <div className="h-[calc(100vh-4rem)] p-4 bg-background overflow-hidden">
+            <div className="h-full p-4 bg-background overflow-hidden">
                 <FocusMode
                     onExit={() => setFocusTaskId(null)}
                 />
@@ -24,7 +24,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="h-[calc(100vh-4rem)] p-4 gap-4 bg-background overflow-hidden flex flex-col md:block">
+        <div className="h-full p-4 gap-4 bg-background overflow-hidden flex flex-col md:block">
 
             {/* Mobile View: Stack */}
             <div className="md:hidden flex flex-col gap-4 h-full overflow-y-auto pb-20">

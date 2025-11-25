@@ -14,7 +14,7 @@ const DashboardLayout = () => {
     const location = useLocation();
 
     return (
-        <div className="min-h-screen flex flex-col font-mono selection:bg-primary selection:text-primary-foreground">
+        <div className="min-h-screen md:h-screen md:overflow-hidden flex flex-col font-mono selection:bg-primary selection:text-primary-foreground">
             <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-sm z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
                     {/* Hidden logo for spacing */}
@@ -102,7 +102,7 @@ const DashboardLayout = () => {
                 </div>
             </header>
 
-            <main className="flex-1">
+            <main className="flex-1 md:overflow-y-auto">
                 <Outlet />
             </main>
 
