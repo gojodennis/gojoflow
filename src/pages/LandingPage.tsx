@@ -76,21 +76,21 @@ const LandingPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-black">
+                        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-foreground">
                             CONSOLIDATE YOUR<br />ENTIRE WORKFLOW
                         </h1>
-                        <p className="text-xl text-black/70 max-w-2xl mx-auto mb-8">
+                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
                             The universal task manager that brings all your tools into one timeline.
                             Minimal, fast, and keyboard-centric.
                         </p>
                         <div className="flex justify-center gap-4">
                             <button
                                 onClick={() => setAuthOpen(true)}
-                                className="bg-black text-white px-8 py-4 rounded-md text-lg font-medium hover:bg-neutral-800 transition-all flex items-center gap-2 group"
+                                className="bg-foreground text-background px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group"
                             >
                                 Sign Up <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </button>
-                            <button className="border border-black/20 bg-white/50 text-black hover:bg-white/70 px-8 py-4 rounded-md text-lg font-medium transition-colors backdrop-blur-sm">
+                            <button className="border border-border bg-background/50 text-foreground hover:bg-background/70 px-8 py-4 rounded-md text-lg font-medium transition-colors backdrop-blur-sm">
                                 Watch Demo
                             </button>
                         </div>

@@ -11,7 +11,7 @@ const PricingPage = () => {
     const [authOpen, setAuthOpen] = useState(false);
 
     return (
-        <div className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-screen bg-background flex items-center justify-center overflow-hidden">
             <BackgroundBeams className="opacity-70" />
             <div className="relative z-10 container mx-auto px-4 md:px-6 text-center max-w-2xl">
                 <motion.div

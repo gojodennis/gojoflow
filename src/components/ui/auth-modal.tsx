@@ -1,11 +1,12 @@
-'use client';
-import React from 'react';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Modal,
     ModalBody,
     ModalContent,
     ModalHeader,
     ModalTitle,
+    ModalTrigger,
 } from '@/components/ui/modal';
 import { Link } from 'react-router-dom';
 import { Button } from './button';
@@ -14,26 +15,39 @@ import { AtSignIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion } from 'framer-motion';
 
-type AuthModalProps = Omit<React.ComponentProps<typeof Modal>, 'children'>;
+type AuthModalProps = Omit<React.ComponentProps<typeof Modal>, 'children'> & {
+    children?: React.ReactNode;
+};
 
-export function AuthModal(props: AuthModalProps) {
+export function AuthModal({ children, ...props }: AuthModalProps) {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
+    const [isSignUp, setIsSignUp] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const navigate = useNavigate();
 
-    const handleSignUp = async () => {
+    const handleAuth = async () => {
         try {
             setLoading(true);
             setMessage(null);
-            const { error } = await supabase.auth.signUp({
-                email,
-                password,
-            });
 
-            if (error) throw error;
-
-            setMessage({ type: 'success', text: 'Check your email for the confirmation link!' });
+            if (isSignUp) {
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                setMessage({ type: 'success', text: 'Check your email for the confirmation link!' });
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                props.onOpenChange?.(false);
+                navigate('/dashboard');
+            }
         } catch (error: any) {
             setMessage({ type: 'error', text: error.message || 'An error occurred' });
         } finally {
@@ -48,7 +62,7 @@ export function AuthModal(props: AuthModalProps) {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/`,
+                    redirectTo: `${window.location.origin}/dashboard`,
                 },
             });
 
@@ -62,6 +76,11 @@ export function AuthModal(props: AuthModalProps) {
 
     return (
         <Modal {...props}>
+            {children && (
+                <ModalTrigger asChild>
+                    {children}
+                </ModalTrigger>
+            )}
             <ModalContent>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -69,7 +88,7 @@ export function AuthModal(props: AuthModalProps) {
                     transition={{ duration: 0.5 }}
                 >
                     <ModalHeader>
-                        <ModalTitle>Sign In or Join Now!</ModalTitle>
+                        <ModalTitle>{isSignUp ? 'Create an Account' : 'Welcome Back'}</ModalTitle>
                     </ModalHeader>
                     <ModalBody>
                         <Button
@@ -94,7 +113,7 @@ export function AuthModal(props: AuthModalProps) {
                             </div>
                         </div>
                         <p className="text-muted-foreground mb-2 text-start text-xs">
-                            Enter your email address to sign in or create an account
+                            {isSignUp ? 'Enter your email to create an account' : 'Enter your email to sign in'}
                         </p>
 
                         {message && (
@@ -135,11 +154,24 @@ export function AuthModal(props: AuthModalProps) {
                             type="button"
                             variant="outline"
                             className="animate-in fade-in mt-4 w-full duration-300"
-                            onClick={handleSignUp}
+                            onClick={handleAuth}
                             disabled={loading}
                         >
-                            <span>{loading ? 'Loading...' : 'Sign Up With Email'}</span>
+                            <span>{loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}</span>
                         </Button>
+
+                        <div className="mt-4 text-center text-xs">
+                            <span className="text-muted-foreground">
+                                {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setIsSignUp(!isSignUp)}
+                                className="text-foreground hover:underline font-medium"
+                            >
+                                {isSignUp ? 'Sign In' : 'Sign Up'}
+                            </button>
+                        </div>
                     </ModalBody>
                     <div className="p-4">
                         <p className="text-muted-foreground text-center text-xs">

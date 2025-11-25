@@ -35,8 +35,8 @@ function useContext() {
 }
 
 type ModalProps = {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
     defaultOpen?: boolean;
     children: React.ReactNode;
     dialogProps?: React.ComponentProps<typeof Dialog>;
