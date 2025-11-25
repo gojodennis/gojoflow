@@ -39,15 +39,14 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2">
-                    {(['shizo', 'high', 'medium', 'low'] as const).map((level) => (
+                <div className="grid grid-cols-3 gap-2">
+                    {(['high', 'medium', 'low'] as const).map((level) => (
                         <div key={level} className="bg-white/5 rounded-md p-2 text-center">
                             <div className={cn(
                                 "text-lg font-bold",
                                 level === 'high' && "text-red-400",
                                 level === 'medium' && "text-yellow-400",
-                                level === 'low' && "text-green-400",
-                                level === 'shizo' && "text-[#FFD700]"
+                                level === 'low' && "text-green-400"
                             )}>
                                 {activeTasks.filter(t => t.energy_level === level).length}
                             </div>
