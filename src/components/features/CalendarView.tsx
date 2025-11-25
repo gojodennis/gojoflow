@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Calendar } from "@/components/ui/calendar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
@@ -27,7 +26,7 @@ interface TimeBlock {
 
 export function CalendarView({ quote }: { quote?: React.ReactNode }) {
     const { user } = useAuth()
-    const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [date] = React.useState<Date | undefined>(new Date())
     const [blocks, setBlocks] = useState<TimeBlock[]>([])
     const [proposedBlocks, setProposedBlocks] = useState<TimeBlock[]>([])
     const { energy } = useStore()
@@ -180,18 +179,14 @@ export function CalendarView({ quote }: { quote?: React.ReactNode }) {
     return (
         <div className="flex h-full flex-col md:flex-row gap-4 p-4">
             {/* Sidebar - Calendar & Graph */}
-            <div className={cn(
-                "w-full md:w-auto flex flex-col gap-4",
-                "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl p-4"
-            )}>
-                <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md border border-white/5 bg-background/50"
-                />
-                {quote}
-            </div>
+            {quote && (
+                <div className={cn(
+                    "w-full md:w-auto flex flex-col gap-4",
+                    "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl p-4"
+                )}>
+                    {quote}
+                </div>
+            )}
 
             {/* Main Schedule View */}
             <div className={cn(

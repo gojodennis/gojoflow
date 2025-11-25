@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Zap } from "lucide-react"
+import { Check, RotateCcw, Play, Pause } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 interface FocusModeProps {
     onExit: () => void
@@ -44,64 +45,73 @@ export function FocusMode({ onExit }: FocusModeProps) {
         <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden z-50">
             {/* Main Timer Container */}
             <div className="flex flex-col items-center justify-center gap-8">
-                {/* Energy Indicator */}
-                <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/50">
-                    <Zap className="text-white fill-white" size={32} />
-                </div>
-
                 {/* Timer Display */}
                 <div className="text-[120px] font-bold font-mono tracking-tighter tabular-nums text-white leading-none">
                     {formatTime(timeLeft)}
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-[500px] h-3 bg-neutral-900 rounded-full overflow-hidden mb-4">
+                <div className="w-[500px] h-3 bg-background/60 backdrop-blur-xl border border-white/10 rounded-full overflow-hidden">
                     <div
                         className={cn(
                             "h-full transition-all duration-1000",
-                            progress < 33 ? "bg-emerald-400" :
-                                progress < 66 ? "bg-orange-400" :
-                                    "bg-pink-400"
+                            progress < 33 ? "bg-emerald-500" :
+                                progress < 66 ? "bg-orange-500" :
+                                    "bg-pink-500"
                         )}
                         style={{ width: `${progress}%` }}
                     />
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-center gap-6 mt-4">
+                {/* Action Buttons - Carousel Pill Style */}
+                <div className="flex p-1.5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-lg gap-1">
                     {/* Done Button */}
-                    <button
+                    <Button
+                        variant="ghost"
                         onClick={onExit}
-                        className="w-24 h-24 bg-emerald-400 hover:bg-emerald-500 rounded-2xl transition-all shadow-lg shadow-emerald-400/30 hover:scale-105 active:scale-95"
-                        aria-label="Done"
+                        className={cn(
+                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
+                            "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
+                        )}
                     >
-                        <span className="sr-only">Done</span>
-                    </button>
+                        <Check className="w-4 h-4 mr-2" />
+                        Done
+                    </Button>
 
                     {/* Restart Button */}
-                    <button
+                    <Button
+                        variant="ghost"
                         onClick={resetTimer}
-                        className="w-24 h-24 bg-orange-300 hover:bg-orange-400 rounded-2xl transition-all shadow-lg shadow-orange-300/30 hover:scale-105 active:scale-95"
-                        aria-label="Restart"
+                        className={cn(
+                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
+                            "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
+                        )}
                     >
-                        <span className="sr-only">Restart</span>
-                    </button>
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Restart
+                    </Button>
 
-                    {/* Pause Button */}
-                    <button
+                    {/* Play/Pause Button */}
+                    <Button
+                        variant="ghost"
                         onClick={toggleTimer}
-                        className="w-24 h-24 bg-pink-300 hover:bg-pink-400 rounded-2xl transition-all shadow-lg shadow-pink-300/30 hover:scale-105 active:scale-95"
-                        aria-label={isActive ? "Pause" : "Play"}
+                        className={cn(
+                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
+                            "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30"
+                        )}
                     >
-                        <span className="sr-only">{isActive ? "Pause" : "Play"}</span>
-                    </button>
-                </div>
-
-                {/* Button Labels */}
-                <div className="flex items-center justify-center gap-6 mt-2">
-                    <span className="w-24 text-center text-emerald-400 font-bold text-lg">DONE</span>
-                    <span className="w-24 text-center text-orange-300 font-bold text-lg">RESTART</span>
-                    <span className="w-24 text-center text-pink-300 font-bold text-lg">{isActive ? "PAUSE" : "PLAY"}</span>
+                        {isActive ? (
+                            <>
+                                <Pause className="w-4 h-4 mr-2" />
+                                Pause
+                            </>
+                        ) : (
+                            <>
+                                <Play className="w-4 h-4 mr-2" />
+                                Play
+                            </>
+                        )}
+                    </Button>
                 </div>
             </div>
         </div>

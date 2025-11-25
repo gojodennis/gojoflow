@@ -1,5 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar } from "@/components/ui/calendar"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function CalendarPlaceholder() {
     return (
@@ -11,15 +10,6 @@ export function CalendarPlaceholder() {
                         We are currently building the new calendar experience.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-center p-6">
-                    <div className="pointer-events-none opacity-50 grayscale filter">
-                        <Calendar
-                            mode="single"
-                            selected={new Date()}
-                            className="rounded-md border shadow-sm"
-                        />
-                    </div>
-                </CardContent>
             </Card>
         </div>
     )

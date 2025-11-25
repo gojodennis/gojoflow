@@ -21,6 +21,7 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
     const firstDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1).getDay()
 
     const monthName = displayDate.toLocaleString('default', { month: 'long' })
+    const currentMonthName = today.toLocaleString('default', { month: 'long' })
     const year = displayDate.getFullYear()
     const dayOfMonth = today.getDate()
     const dayName = today.toLocaleDateString('default', { weekday: 'long' })
@@ -68,7 +69,7 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
                 {/* Left: Large Date Display */}
                 <div className="flex flex-col justify-center">
                     <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        {monthName}
+                        {currentMonthName}
                     </div>
                     <div className="text-6xl font-bold tracking-tighter tabular-nums leading-none mb-2">
                         {dayOfMonth}
