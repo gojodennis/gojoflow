@@ -154,11 +154,14 @@ export function TaskList({ onEnterFocus }: TaskListProps) {
                                 <Sparkles className="w-3 h-3 mr-1" />
                                 TODAY'S FOCUS
                             </Badge>
-                            <span className="text-xs text-muted-foreground font-mono">
+                            <span className="hidden md:inline text-xs text-muted-foreground font-mono">
                                 {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
                             </span>
                         </div>
-                        <Badge variant="outline" className="font-mono text-xs">
+                        <span className="md:hidden text-xs text-muted-foreground font-mono">
+                            {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                        </span>
+                        <Badge variant="outline" className="hidden md:flex font-mono text-xs">
                             {activeTasks.length} PENDING
                         </Badge>
                     </div>

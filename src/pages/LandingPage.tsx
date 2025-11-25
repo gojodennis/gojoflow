@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, CheckCircle2, Zap } from 'lucide-react';
 import { Tiles } from '@/components/ui/tiles';
 import { AuthModal } from '@/components/ui/auth-modal';
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import { useAuth } from '@/components/providers/AuthProvider';
 import {
     CalendarAnimation,
     TaskConsolidationAnimation,
@@ -62,6 +64,7 @@ const features = [
 
 const LandingPage = () => {
     const [authOpen, setAuthOpen] = useState(false);
+    const { user } = useAuth();
 
     return (
 
@@ -84,12 +87,20 @@ const LandingPage = () => {
                             Minimal, fast, and keyboard-centric.
                         </p>
                         <div className="flex justify-center gap-4">
-                            <button
-                                onClick={() => setAuthOpen(true)}
-                                className="bg-foreground text-background px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group"
-                            >
-                                Sign Up <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            {user ? (
+                                <Link to="/dashboard">
+                                    <button className="bg-foreground text-background px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group">
+                                        Go to Dashboard <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={() => setAuthOpen(true)}
+                                    className="bg-foreground text-background px-8 py-4 rounded-md text-lg font-medium hover:opacity-90 transition-all flex items-center gap-2 group"
+                                >
+                                    Sign Up <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            )}
                             <button className="border border-border bg-background/50 text-foreground hover:bg-background/70 px-8 py-4 rounded-md text-lg font-medium transition-colors backdrop-blur-sm">
                                 Watch Demo
                             </button>

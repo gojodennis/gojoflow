@@ -4,7 +4,6 @@ import { TaskList } from "@/components/features/TaskList"
 import { SmallCalendar } from "@/components/features/SmallCalendar"
 import { EnergyStats } from "@/components/features/EnergyStats"
 import { StatsCarousel } from "@/components/features/StatsCarousel"
-import { ActivityGraph } from "@/components/features/ActivityGraph"
 import { FocusMode } from "@/components/features/FocusMode"
 import { useState } from "react"
 import { useTaskContext } from "@/components/providers/TaskContext"
@@ -38,9 +37,6 @@ export default function DashboardPage() {
                 <div className="h-[400px] shrink-0">
                     <TaskList onEnterFocus={setFocusTaskId} />
                 </div>
-                <div className="h-[200px] shrink-0">
-                    <ActivityGraph />
-                </div>
             </div>
 
             {/* Desktop View: 3 Columns */}
@@ -57,9 +53,6 @@ export default function DashboardPage() {
                             calendar={<SmallCalendar currentDate={currentDate} onMonthChange={setCurrentDate} />}
                             energy={<EnergyStats tasks={tasks} />}
                         />
-                    </div>
-                    <div className="h-[200px] shrink-0">
-                        <ActivityGraph />
                     </div>
                 </div>
             </div>
