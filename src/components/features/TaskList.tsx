@@ -76,8 +76,9 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
 
 interface TaskListProps {
     onEnterFocus?: (taskId: string) => void
+    className?: string
 }
-export function TaskList({ onEnterFocus }: TaskListProps) {
+export function TaskList({ onEnterFocus, className }: TaskListProps) {
     const { user } = useAuth()
     const { tasks, loading, createTask, toggleTask, deleteTask } = useTaskContext()
     const [newTaskTitle, setNewTaskTitle] = useState("")
@@ -136,7 +137,7 @@ export function TaskList({ onEnterFocus }: TaskListProps) {
     }
 
     return (
-        <div className="relative h-full w-full overflow-hidden flex flex-col">
+        <div className={cn("relative h-full w-full overflow-hidden flex flex-col", className)}>
             {/* Background Effects */}
             <div className="pointer-events-none absolute inset-0 -z-10">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />

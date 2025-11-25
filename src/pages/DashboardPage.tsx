@@ -34,8 +34,8 @@ export default function DashboardPage() {
                         energy={<EnergyStats tasks={tasks} />}
                     />
                 </div>
-                <div className="h-[400px] shrink-0">
-                    <TaskList onEnterFocus={setFocusTaskId} />
+                <div className="shrink-0">
+                    <TaskList onEnterFocus={setFocusTaskId} className="min-h-[400px] h-auto" />
                 </div>
             </div>
 

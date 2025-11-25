@@ -33,7 +33,7 @@ const PricingPage = () => {
                     transition={{ duration: 0.5 }}
                     className="mb-12"
                 >
-                    <h1 className="text-5xl sm:text-7xl font-bold mb-8 tracking-tighter text-white">
+                    <h1 className="text-5xl sm:text-7xl font-bold mb-8 tracking-tighter text-foreground">
                         Pricing Plans
                     </h1>
                     <p className="text-xl text-muted-foreground mb-12">

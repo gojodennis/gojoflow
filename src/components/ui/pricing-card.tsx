@@ -32,7 +32,7 @@ export const PricingCard = ({
                 {/* Price Section */}
                 <div className="mb-8 text-center">
                     <div className="flex items-baseline justify-center gap-1 mb-2">
-                        <span className="text-6xl font-bold tracking-tighter">
+                        <span className="text-6xl font-bold tracking-tighter text-foreground">
                             {isFree ? 'Free' : `$${price}`}
                         </span>
                         {!isFree && <span className="text-muted-foreground text-lg">{period}</span>}
