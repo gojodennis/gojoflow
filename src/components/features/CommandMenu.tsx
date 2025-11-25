@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { useTaskContext } from "@/components/providers/TaskContext"
-import { predictEnergyLevel } from "@/lib/ai-utils"
+import { predictEnergyLevel, extractDuration } from "@/lib/ai-utils"
 
 export function CommandMenu() {
     const { signOut } = useAuth()
@@ -144,12 +144,15 @@ export function CommandMenu() {
                                 id="title"
                                 value={newTask.title}
                                 onChange={(e) => {
-                                    const title = e.target.value
-                                    setNewTask({
-                                        ...newTask,
+                                    const title = e.target.value;
+                                    const energy = predictEnergyLevel(title);
+                                    const duration = extractDuration(title);
+                                    setNewTask(prev => ({
+                                        ...prev,
                                         title,
-                                        energy: predictEnergyLevel(title)
-                                    })
+                                        energy,
+                                        duration: duration ? duration.toString() : prev.duration
+                                    }))
                                 }}
                                 onKeyDown={handleKeyDown}
                                 placeholder="e.g. Review PRD"

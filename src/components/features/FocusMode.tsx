@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 
 interface FocusModeProps {
     onExit: () => void
+    onComplete?: () => void
 }
 
-export function FocusMode({ onExit }: FocusModeProps) {
+export function FocusMode({ onExit, onComplete }: FocusModeProps) {
     const [timeLeft, setTimeLeft] = useState(25 * 60) // 25 minutes
     const [isActive, setIsActive] = useState(false)
 
@@ -42,36 +43,37 @@ export function FocusMode({ onExit }: FocusModeProps) {
     const progress = ((25 * 60 - timeLeft) / (25 * 60)) * 100
 
     return (
-        <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden z-50">
+        <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden z-50 p-4">
             {/* Main Timer Container */}
-            <div className="flex flex-col items-center justify-center gap-8">
+            <div className="flex flex-col items-center justify-center gap-6 md:gap-8 w-full max-w-2xl">
                 {/* Timer Display */}
-                <div className="text-[120px] font-bold font-mono tracking-tighter tabular-nums text-white leading-none">
+                <div className="text-7xl md:text-9xl font-bold font-mono tracking-tighter tabular-nums text-white leading-none">
                     {formatTime(timeLeft)}
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-[500px] h-3 bg-background/60 backdrop-blur-xl border border-white/10 rounded-full overflow-hidden">
+                <div className="w-full max-w-md md:max-w-2xl h-2 md:h-3 bg-white/10 border border-white/20 rounded-full overflow-hidden">
                     <div
-                        className={cn(
-                            "h-full transition-all duration-1000",
-                            progress < 33 ? "bg-emerald-500" :
-                                progress < 66 ? "bg-orange-500" :
-                                    "bg-pink-500"
-                        )}
+                        className="h-full transition-all duration-1000 bg-white/90"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
 
-                {/* Action Buttons - Carousel Pill Style */}
-                <div className="flex p-1.5 bg-background/60 backdrop-blur-xl border border-white/10 rounded-lg gap-1">
+                {/* Action Buttons - Minimal Style */}
+                <div className="flex flex-wrap justify-center gap-2 md:gap-3 w-full max-w-md">
                     {/* Done Button */}
                     <Button
                         variant="ghost"
-                        onClick={onExit}
+                        onClick={() => {
+                            if (onComplete) {
+                                onComplete()
+                            } else {
+                                onExit()
+                            }
+                        }}
                         className={cn(
-                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
-                            "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
+                            "min-h-[44px] px-4 md:px-6 text-sm font-medium rounded-md transition-all",
+                            "border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/30"
                         )}
                     >
                         <Check className="w-4 h-4 mr-2" />
@@ -83,8 +85,8 @@ export function FocusMode({ onExit }: FocusModeProps) {
                         variant="ghost"
                         onClick={resetTimer}
                         className={cn(
-                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
-                            "bg-orange-500/20 text-orange-400 hover:bg-orange-500/30"
+                            "min-h-[44px] px-4 md:px-6 text-sm font-medium rounded-md transition-all",
+                            "border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/30"
                         )}
                     >
                         <RotateCcw className="w-4 h-4 mr-2" />
@@ -96,8 +98,8 @@ export function FocusMode({ onExit }: FocusModeProps) {
                         variant="ghost"
                         onClick={toggleTimer}
                         className={cn(
-                            "h-10 px-4 text-sm font-medium rounded-md transition-all",
-                            "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30"
+                            "min-h-[44px] px-4 md:px-6 text-sm font-medium rounded-md transition-all",
+                            "border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/30"
                         )}
                     >
                         {isActive ? (

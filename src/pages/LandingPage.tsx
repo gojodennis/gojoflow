@@ -1,66 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, CheckCircle2, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Tiles } from '@/components/ui/tiles';
 import { AuthModal } from '@/components/ui/auth-modal';
-import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { useAuth } from '@/components/providers/AuthProvider';
-import {
-    CalendarAnimation,
-    TaskConsolidationAnimation,
-    CommandBarAnimation,
-    FocusModeAnimation,
-    AutomationsAnimation
-} from '@/components/ui/bento-animations';
 
-const features = [
-    {
-        Icon: Calendar,
-        name: "Unified Calendar",
-        description: "Pull events from Google, Outlook, and more into a single view.",
-        href: "/",
-        cta: "Learn more",
-        background: <CalendarAnimation />,
-        className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
-    },
-    {
-        Icon: CheckCircle2,
-        name: "Task Consolidation",
-        description: "Turn emails, Slack messages, and Jira tickets into tasks instantly.",
-        href: "/",
-        cta: "Learn more",
-        background: <TaskConsolidationAnimation />,
-        className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
-    },
-    {
-        Icon: Zap,
-        name: "Command Bar",
-        description: "Navigate everything with your keyboard. Speed is our priority.",
-        href: "/",
-        cta: "Learn more",
-        background: <CommandBarAnimation />,
-        className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
-    },
-    {
-        Icon: ArrowRight,
-        name: "Focus Mode",
-        description: "Enter a distraction-free environment to get deep work done.",
-        href: "/",
-        cta: "Learn more",
-        background: <FocusModeAnimation />,
-        className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
-    },
-    {
-        Icon: CheckCircle2,
-        name: "Energy Based Patterns",
-        description: "Learns from recurring basic tasks to suggest optimal meeting times and schedules.",
-        href: "/",
-        cta: "Learn more",
-        background: <AutomationsAnimation />,
-        className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
-    },
-];
+
 
 const LandingPage = () => {
     const [authOpen, setAuthOpen] = useState(false);
@@ -109,14 +55,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Features Grid */}
-            <section className="py-20 container mx-auto px-4">
-                <BentoGrid className="lg:grid-rows-2">
-                    {features.map((feature) => (
-                        <BentoCard key={feature.name} {...feature} />
-                    ))}
-                </BentoGrid>
-            </section>
+
 
             {/* Social Proof / Trusted By */}
             <section className="py-10 border-y border-border container mx-auto px-4">

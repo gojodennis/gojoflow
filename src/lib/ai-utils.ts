@@ -36,3 +36,21 @@ export function predictEnergyLevel(title: string): EnergyLevel {
     // Default to medium
     return 'medium';
 }
+
+export function extractDuration(text: string): number | null {
+    const lowerText = text.toLowerCase();
+
+    // Match hours: 1h, 1.5h, 1 hour, 1 hours
+    const hourMatch = lowerText.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)/);
+    if (hourMatch) {
+        return Math.round(parseFloat(hourMatch[1]) * 60);
+    }
+
+    // Match minutes: 30m, 30 min, 30 mins, 30 minutes
+    const minMatch = lowerText.match(/(\d+)\s*(?:m|min|mins|minute|minutes)/);
+    if (minMatch) {
+        return parseInt(minMatch[1]);
+    }
+
+    return null;
+}

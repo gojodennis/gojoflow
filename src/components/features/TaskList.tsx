@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { CheckCircle2, Circle, Clock, Play, Trash2, Plus, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { useTaskContext, type Task } from "@/components/providers/TaskContext"
-import { predictEnergyLevel } from "@/lib/ai-utils"
+import { predictEnergyLevel, extractDuration } from "@/lib/ai-utils"
 
 function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle: (id: string) => void, onDelete: (id: string) => void, onFocus: (id: string) => void }) {
     return (
@@ -43,7 +44,7 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
                         task.energy_level === "low" && "text-green-400",
                         task.title.toLowerCase().includes("meow") && "animate-[shizo-glow_2s_ease-in-out_infinite] text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)]"
                     )}>
-                        {task.energy_level}
+                        {task.title.toLowerCase().includes("meow") ? "shizo" : task.energy_level}
                     </span>
                     <span>•</span>
                     <div className="flex items-center gap-1">
@@ -91,7 +92,7 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
             await createTask({
                 title: newTaskTitle,
                 energy_level: predictEnergyLevel(newTaskTitle),
-                duration: 30,
+                duration: extractDuration(newTaskTitle) || 30,
                 completed: false,
             })
             setNewTaskTitle("")
@@ -123,7 +124,48 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
     const completedTasks = tasks.filter(t => t.completed)
 
     if (loading) {
-        return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading workspace...</div>
+        return (
+            <div className={cn("relative h-full w-full overflow-hidden flex flex-col", className)}>
+                <div className="pointer-events-none absolute inset-0 -z-10">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
+                    <div className="absolute inset-0 bg-[size:20px_20px] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]" />
+                </div>
+
+                <div className={cn(
+                    "flex-1 flex flex-col",
+                    "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                )}>
+                    {/* Header Skeleton */}
+                    <div className="relative p-6 border-b border-white/5">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-5 w-24" />
+                                <Skeleton className="h-4 w-32 hidden md:block" />
+                            </div>
+                            <Skeleton className="h-5 w-20 hidden md:block" />
+                        </div>
+                        {/* Input Skeleton */}
+                        <Skeleton className="h-12 w-full rounded-md" />
+                    </div>
+
+                    {/* Task List Skeleton */}
+                    <div className="flex-1 p-4 space-y-3">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-background/40">
+                                <Skeleton className="h-5 w-5 rounded-full" />
+                                <div className="flex-1 flex flex-col gap-2">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <div className="flex gap-2">
+                                        <Skeleton className="h-3 w-12" />
+                                        <Skeleton className="h-3 w-8" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     if (!user) {

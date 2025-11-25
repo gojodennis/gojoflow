@@ -9,7 +9,7 @@ import { useState } from "react"
 import { useTaskContext } from "@/components/providers/TaskContext"
 
 export default function DashboardPage() {
-    const { tasks } = useTaskContext()
+    const { tasks, toggleTask } = useTaskContext()
     const [currentDate, setCurrentDate] = useState<Date>(new Date())
     const [focusTaskId, setFocusTaskId] = useState<string | null>(null)
 
@@ -18,6 +18,10 @@ export default function DashboardPage() {
             <div className="h-full p-4 bg-background overflow-hidden">
                 <FocusMode
                     onExit={() => setFocusTaskId(null)}
+                    onComplete={async () => {
+                        await toggleTask(focusTaskId)
+                        setFocusTaskId(null)
+                    }}
                 />
             </div>
         )

@@ -258,11 +258,13 @@ export function CalendarView({ quote }: { quote?: React.ReactNode }) {
                                         <div className="font-semibold tracking-tight">{block.task.title}</div>
                                         <Badge variant="outline" className={cn(
                                             "text-[10px] h-5 px-1 bg-black/20 border-0",
-                                            block.task.energy_level === "high" ? "text-red-400" :
-                                                block.task.energy_level === "medium" ? "text-yellow-400" :
-                                                    "text-green-400"
+                                            block.task.title.toLowerCase().includes("meow") ? "animate-[shizo-glow_2s_ease-in-out_infinite] text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)]" : (
+                                                block.task.energy_level === "high" ? "text-red-400" :
+                                                    block.task.energy_level === "medium" ? "text-yellow-400" :
+                                                        "text-green-400"
+                                            )
                                         )}>
-                                            {block.task.energy_level}
+                                            {block.task.title.toLowerCase().includes("meow") ? "shizo" : block.task.energy_level}
                                         </Badge>
                                     </div>
                                     <div className="text-xs opacity-60 mt-1 font-mono">
