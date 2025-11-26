@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X, Heart, Hourglass } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './providers/AuthProvider';
 import { cn } from '@/lib/utils';
@@ -18,8 +18,9 @@ const Layout = () => {
         <div className="min-h-screen flex flex-col font-mono selection:bg-primary selection:text-primary-foreground">
             <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-sm z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
-                    <Link to="/" className="text-xl font-bold tracking-tighter z-50 relative" onClick={() => setIsMobileMenuOpen(false)}>
-                        GOJOFLOW
+                    <Link to="/" className="flex items-center gap-2 z-50 relative group" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Hourglass className="w-6 h-6 fill-current" />
+                        <span className="text-xl font-bold tracking-tighter">gojoflow</span>
                     </Link>
 
                     {/* Desktop Navigation - Centered */}
