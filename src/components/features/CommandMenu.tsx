@@ -91,7 +91,7 @@ export function CommandMenu() {
                         <CommandIcon className="h-5 w-5 text-purple-500 shrink-0" />
                         <CommandInput
                             placeholder="Type a command..."
-                            className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg placeholder:text-muted-foreground/60 px-0 h-10 flex-1"
+                            className="border-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg placeholder:text-muted-foreground/60 px-0 h-10 flex-1 bg-transparent shadow-none"
                         />
                         <kbd className="pointer-events-none inline-flex h-7 select-none items-center gap-1 rounded bg-muted/30 px-2.5 font-mono text-[12px] font-medium text-muted-foreground/70">
                             ⌘K

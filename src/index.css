@@ -55,16 +55,20 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-mono antialiased;
   }
 }
 
 @keyframes shizo-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     color: #FFD700;
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
   }
+
   50% {
     color: #FF1493;
     text-shadow: 0 0 8px rgba(255, 20, 147, 0.8);

@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Tiles } from '@/components/ui/tiles';
 import { AuthModal } from '@/components/ui/auth-modal';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { Features } from '@/components/ui/features-8';
 
 
 
@@ -55,7 +56,8 @@ const LandingPage = () => {
                 </div>
             </section>
 
-
+            {/* Features Section */}
+            <Features />
 
             {/* Social Proof / Trusted By */}
             <section className="py-10 border-y border-border container mx-auto px-4">
