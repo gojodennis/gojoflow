@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# GojoFlow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+GojoFlow is a modern, high-performance task management application designed to help you stay in the flow. Built with a keyboard-first approach, it combines AI-powered intelligence, focus tools, and a beautiful glassmorphism UI to enhance your productivity.
 
-Currently, two official plugins are available:
+![GojoFlow Banner](public/og-image.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+-   **⌨️ Keyboard-First Workflow**: Navigate and manage tasks efficiently using the command menu (`Cmd/Ctrl + K`) without lifting your hands from the keyboard.
+-   **🧠 AI-Powered Intelligence**: Smart task parsing and duration extraction to streamline your planning.
+-   **🍅 Pomodoro Focus Mode**: Integrated timer to help you maintain focus and manage your energy levels.
+-   **⚡ Energy Level Tracking**: Monitor your energy throughout the day to optimize your schedule.
+-   **📅 Unified Timeline**: A clear view of your tasks and schedule.
+-   **🎨 Stunning UI**: A premium, glassmorphism-inspired design with smooth animations and dark/light mode support.
+-   **🔐 Secure Authentication**: Powered by Supabase for reliable and secure user management.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+-   **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/), [Framer Motion](https://www.framer.com/motion/)
+-   **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+-   **Backend & Auth**: [Supabase](https://supabase.com/)
+-   **Routing**: [React Router](https://reactrouter.com/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Follow these steps to set up the project locally.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+-   Node.js (v18 or higher)
+-   npm or yarn
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1.  **Clone the repository**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+    ```bash
+    git clone https://github.com/yourusername/gojoflow.git
+    cd gojoflow
+    ```
+
+2.  **Install dependencies**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Set up Environment Variables**
+
+    Create a `.env` file in the root directory and add your Supabase credentials:
+
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
+
+4.  **Run the development server**
+
+    ```bash
+    npm run dev
+    ```
+
+    Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+
+## 📜 Scripts
+
+-   `npm run dev`: Starts the development server.
+-   `npm run build`: Builds the app for production.
+-   `npm run lint`: Runs ESLint to check for code quality issues.
+-   `npm run preview`: Locally preview the production build.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
