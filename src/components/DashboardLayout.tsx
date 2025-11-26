@@ -15,7 +15,7 @@ const DashboardLayout = () => {
 
     return (
         <div className="min-h-screen md:h-screen md:overflow-hidden flex flex-col font-mono selection:bg-primary selection:text-primary-foreground">
-            <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-sm z-50">
+            <header className="border-b sticky top-0 bg-background/80 backdrop-blur-sm z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between relative">
                     {/* Hidden logo for spacing */}
                     <div className="w-1" />
@@ -66,7 +66,7 @@ const DashboardLayout = () => {
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                className="absolute inset-x-0 top-0 bg-background border-b border-border p-4 pt-20 md:hidden shadow-lg"
+                                className="absolute inset-x-0 top-0 bg-background border-b p-4 pt-20 md:hidden shadow-lg"
                             >
                                 <nav className="flex flex-col gap-4 text-lg font-medium">
                                     <Link

@@ -182,7 +182,7 @@ export function CalendarView({ quote }: { quote?: React.ReactNode }) {
             {quote && (
                 <div className={cn(
                     "w-full md:w-auto flex flex-col gap-4",
-                    "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl p-4"
+                    "bg-background/60 backdrop-blur-xl border rounded-xl p-4"
                 )}>
                     {quote}
                 </div>
@@ -191,9 +191,9 @@ export function CalendarView({ quote }: { quote?: React.ReactNode }) {
             {/* Main Schedule View */}
             <div className={cn(
                 "flex-1 flex flex-col h-full overflow-hidden",
-                "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl"
+                "bg-background/60 backdrop-blur-xl border rounded-xl"
             )}>
-                <div className="p-4 border-b border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 bg-white/5">
+                <div className="p-4 border-b flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 bg-muted/30">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                             <CalendarIcon className="w-5 h-5 text-primary" />
@@ -232,7 +232,7 @@ export function CalendarView({ quote }: { quote?: React.ReactNode }) {
                         {Array.from({ length: 13 }).map((_, i) => {
                             const hour = i + 8 // Start at 8 AM
                             return (
-                                <div key={hour} className="absolute w-full border-t border-dashed border-white/5 text-xs text-muted-foreground" style={{ top: `${i * 60 * 2}px` }}>
+                                <div key={hour} className="absolute w-full border-t border-dashed border-border/30 text-xs text-muted-foreground" style={{ top: `${i * 60 * 2}px` }}>
                                     <span className="absolute -top-3 left-0 bg-background/50 backdrop-blur px-2 rounded font-mono text-[10px]">{hour}:00</span>
                                 </div>
                             )

@@ -15,7 +15,7 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
     return (
         <div className={cn(
             "flex flex-col justify-between h-full p-6",
-            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border border-white/10 rounded-xl"
+            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border rounded-xl"
         )}>
             <div className="flex items-center gap-2 mb-4">
                 <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">

@@ -3,9 +3,34 @@
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/AuthProvider"
 import { LogOut } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
 export default function SettingsPage() {
     const { signOut, user } = useAuth()
+
+    const handleDeleteAccount = async () => {
+        if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+            return
+        }
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const { error } = await supabase.functions.invoke('delete-account', {
+                headers: {
+                    Authorization: `Bearer ${session.access_token}`
+                }
+            })
+
+            if (error) throw error
+
+            await signOut()
+        } catch (error) {
+            console.error("Error deleting account:", error)
+            alert("Failed to delete account. Please try again.")
+        }
+    }
 
     return (
         <div className="container mx-auto py-10 px-4 max-w-2xl">
@@ -19,9 +44,24 @@ export default function SettingsPage() {
                             <p className="font-medium">Email</p>
                             <p className="text-sm text-muted-foreground">{user?.email}</p>
                         </div>
-                        <Button variant="destructive" onClick={signOut}>
+                        <Button variant="outline" onClick={signOut}>
                             <LogOut className="mr-2 h-4 w-4" />
                             Log Out
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="p-6 rounded-lg border border-destructive/20 bg-destructive/5 text-card-foreground shadow-sm">
+                    <h2 className="text-xl font-semibold mb-4 text-destructive">Danger Zone</h2>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="font-medium">Delete Account</p>
+                            <p className="text-sm text-muted-foreground">
+                                Permanently delete your account and all of your content.
+                            </p>
+                        </div>
+                        <Button variant="destructive" onClick={handleDeleteAccount}>
+                            Delete Account
                         </Button>
                     </div>
                 </div>

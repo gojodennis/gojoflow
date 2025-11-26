@@ -16,7 +16,7 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
     return (
         <div className={cn(
             "group flex items-center gap-3 rounded-lg border p-3 transition-all hover:bg-accent/50",
-            "bg-background/40 backdrop-blur-sm border-white/10",
+            "bg-background/40 backdrop-blur-sm",
             task.completed && "opacity-50"
         )}>
             <button
@@ -62,14 +62,16 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
                 >
                     <Trash2 className="h-3.5 w-3.5" />
                 </Button>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 hover:bg-primary/10 hover:text-primary"
-                    onClick={() => onFocus(task.id)}
-                >
-                    <Play className="h-3.5 w-3.5" />
-                </Button>
+                {!task.completed && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-primary/10 hover:text-primary"
+                        onClick={() => onFocus(task.id)}
+                    >
+                        <Play className="h-3.5 w-3.5" />
+                    </Button>
+                )}
             </div>
         </div>
     )
@@ -133,10 +135,10 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
 
                 <div className={cn(
                     "flex-1 flex flex-col",
-                    "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                    "bg-background/60 backdrop-blur-xl border rounded-xl overflow-hidden shadow-2xl"
                 )}>
                     {/* Header Skeleton */}
-                    <div className="relative p-6 border-b border-white/5">
+                    <div className="relative p-6 border-b">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <Skeleton className="h-5 w-24" />
@@ -151,7 +153,7 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
                     {/* Task List Skeleton */}
                     <div className="flex-1 p-4 space-y-3">
                         {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-background/40">
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-background/40">
                                 <Skeleton className="h-5 w-5 rounded-full" />
                                 <div className="flex-1 flex flex-col gap-2">
                                     <Skeleton className="h-4 w-3/4" />
@@ -188,9 +190,9 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
 
             <div className={cn(
                 "flex-1 flex flex-col",
-                "bg-background/60 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                "bg-background/60 backdrop-blur-xl border rounded-xl overflow-hidden shadow-2xl"
             )}>
-                <div className="relative p-6 border-b border-white/5">
+                <div className="relative p-6 border-b">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
@@ -219,7 +221,7 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
                             value={newTaskTitle}
                             onChange={(e) => setNewTaskTitle(e.target.value)}
                             placeholder="What needs to be done?"
-                            className="pl-10 h-12 bg-background/50 border-white/10 focus:border-primary/50 transition-all text-lg focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="pl-10 h-12 bg-background/50 focus:border-primary/50 text-lg focus-visible:ring-0 focus-visible:ring-offset-0"
                             autoComplete="off"
                         />
                         <div className="absolute inset-y-0 right-2 flex items-center">
@@ -257,7 +259,7 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
                     </div>
 
                     {completedTasks.length > 0 && (
-                        <div className="mt-6 pt-6 border-t border-white/5">
+                        <div className="mt-6 pt-6 border-t">
                             <div className="text-xs font-semibold text-muted-foreground mb-3 px-1">COMPLETED</div>
                             {completedTasks.map((task) => (
                                 <TaskCard

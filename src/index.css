@@ -74,3 +74,18 @@
     text-shadow: 0 0 8px rgba(255, 20, 147, 0.8);
   }
 }
+
+/* View Transitions API for theme switching */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999;
+}

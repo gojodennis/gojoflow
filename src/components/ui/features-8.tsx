@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Command, Brain, Timer, Zap, Calendar } from 'lucide-react'
+import { Brain, Zap, Calendar } from 'lucide-react'
 
 export function Features() {
     return (

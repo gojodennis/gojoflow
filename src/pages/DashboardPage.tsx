@@ -22,6 +22,7 @@ export default function DashboardPage() {
                         await toggleTask(focusTaskId)
                         setFocusTaskId(null)
                     }}
+                    duration={tasks.find(t => t.id === focusTaskId)?.duration}
                 />
             </div>
         )

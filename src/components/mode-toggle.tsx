@@ -4,10 +4,17 @@ import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 
 export function ModeToggle() {
-    const { theme, setTheme } = useTheme()
+    const { theme, setThemeWithTransition } = useTheme()
 
-    const toggleTheme = () => {
-        setTheme(theme === "dark" ? "light" : "dark")
+    const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const newTheme = theme === "dark" ? "light" : "dark"
+
+        // Get the button's position for the ripple origin
+        const rect = event.currentTarget.getBoundingClientRect()
+        const x = rect.left + rect.width / 2
+        const y = rect.top + rect.height / 2
+
+        setThemeWithTransition(newTheme, x, y)
     }
 
     return (

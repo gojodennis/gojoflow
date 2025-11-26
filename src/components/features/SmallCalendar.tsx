@@ -55,7 +55,7 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
     return (
         <div className={cn(
             "flex flex-col h-full p-6 gap-4",
-            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border border-white/10 rounded-xl"
+            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border rounded-xl"
         )}>
             <div className="flex items-center gap-2 shrink-0">
                 <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">

@@ -17,7 +17,7 @@ export function StatsCarousel({ calendar, energy }: StatsCarouselProps) {
     return (
         <div className="flex flex-col h-full gap-4">
             {/* Toggle Controls */}
-            <div className="flex p-1 bg-background/60 backdrop-blur-xl border border-white/10 rounded-lg w-fit self-end">
+            <div className="flex p-1 bg-background/60 backdrop-blur-xl border rounded-lg w-fit self-end">
                 <Button
                     variant="ghost"
                     size="sm"
@@ -49,7 +49,7 @@ export function StatsCarousel({ calendar, energy }: StatsCarouselProps) {
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 relative overflow-hidden rounded-xl border border-white/10 bg-background/40 backdrop-blur-sm">
+            <div className="flex-1 relative overflow-hidden rounded-xl border bg-background/40 backdrop-blur-sm">
                 <AnimatePresence mode="wait" initial={false}>
                     {activeTab === "calendar" ? (
                         <motion.div

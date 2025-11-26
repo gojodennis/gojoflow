@@ -42,6 +42,27 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         }
     }, [user])
 
+    const cleanupOldTasks = async () => {
+        if (!user) return
+
+        const today = new Date()
+        const yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        yesterday.setHours(0, 0, 0, 0)
+
+        try {
+            const { error: deleteError } = await supabase
+                .from('tasks')
+                .delete()
+                .lt('created_at', yesterday.toISOString())
+                .eq('user_id', user.id)
+
+            if (deleteError) throw deleteError
+        } catch (err) {
+            console.error('Error cleaning up old tasks:', err)
+        }
+    }
+
     const loadTasks = async () => {
         if (!user) {
             setLoading(false)
@@ -50,6 +71,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
         try {
             setLoading(true)
+            await cleanupOldTasks()
             setError(null)
             const { data, error: fetchError } = await supabase
                 .from('tasks')

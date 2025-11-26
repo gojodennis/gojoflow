@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './providers/AuthProvider';
 import { cn } from '@/lib/utils';
@@ -167,10 +167,24 @@ const Layout = () => {
 
             <footer className="border-t border-border py-8 mt-20">
                 <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-                    <p>&copy; 2024 Gojoflow. LUV U PIHU <span className="text-red-500">❤️</span></p>
+                    <p>&copy; 2024 Gojoflow. made with <Heart className="w-4 h-4 text-muted-foreground fill-current inline mx-1" /> by hrishikesh</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
-                        <a href="#" className="hover:text-foreground transition-colors">GitHub</a>
+                        <a
+                            href="https://x.com/goj0dennis"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="hover:text-foreground transition-colors"
+                        >
+                            Twitter
+                        </a>
+                        <a
+                            href="https://github.com/gojodennis"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="hover:text-foreground transition-colors"
+                        >
+                            GitHub
+                        </a>
                     </div>
                 </div>
             </footer>
