@@ -59,17 +59,7 @@ const LandingPage = () => {
             {/* Features Section */}
             <Features />
 
-            {/* Social Proof / Trusted By */}
-            <section className="py-10 border-y border-border container mx-auto px-4">
-                <p className="text-center text-sm text-muted-foreground mb-6">TRUSTED BY TEAMS AT</p>
-                <div className="flex justify-center gap-12 opacity-50 grayscale">
-                    {/* Placeholders for logos */}
-                    <span className="font-bold text-xl">ACME</span>
-                    <span className="font-bold text-xl">STRIPE</span>
-                    <span className="font-bold text-xl">VERCEL</span>
-                    <span className="font-bold text-xl">LINEAR</span>
-                </div>
-            </section>
+
 
             <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
         </div>
