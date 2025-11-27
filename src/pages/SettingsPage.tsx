@@ -1,12 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/AuthProvider"
-import { LogOut } from "lucide-react"
+import { LogOut, MessageSquare } from "lucide-react"
 import { supabase } from "@/lib/supabase"
+import { FeedbackPopup } from "@/components/features/FeedbackPopup"
 
 export default function SettingsPage() {
     const { signOut, user } = useAuth()
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
     const handleDeleteAccount = async () => {
         if (!window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
@@ -51,6 +54,22 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
+                <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <h2 className="text-xl font-semibold mb-4">Feedback</h2>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="font-medium">Send Feedback</p>
+                            <p className="text-sm text-muted-foreground">
+                                Share your thoughts, suggestions, or report issues.
+                            </p>
+                        </div>
+                        <Button variant="outline" onClick={() => setIsFeedbackOpen(true)}>
+                            <MessageSquare className="mr-2 h-4 w-4" />
+                            Send Feedback
+                        </Button>
+                    </div>
+                </div>
+
                 <div className="p-6 rounded-lg border border-destructive/20 bg-destructive/5 text-card-foreground shadow-sm">
                     <h2 className="text-xl font-semibold mb-4 text-destructive">Danger Zone</h2>
                     <div className="flex items-center justify-between">
@@ -66,6 +85,13 @@ export default function SettingsPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Controlled Feedback Popup */}
+            <FeedbackPopup
+                controlled={true}
+                isOpen={isFeedbackOpen}
+                onClose={() => setIsFeedbackOpen(false)}
+            />
         </div>
     )
 }

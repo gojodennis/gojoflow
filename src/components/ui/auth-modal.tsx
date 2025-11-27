@@ -52,6 +52,7 @@ export function AuthModal({ children, ...props }: AuthModalProps) {
                 navigate('/dashboard');
             }
         } catch (error: any) {
+            console.error('Supabase Auth Error:', error);
             setMessage({ type: 'error', text: error.message || 'An error occurred' });
         } finally {
             setLoading(false);
@@ -71,6 +72,7 @@ export function AuthModal({ children, ...props }: AuthModalProps) {
 
             if (error) throw error;
         } catch (error: any) {
+            console.error('Supabase Auth Error:', error);
             setMessage({ type: 'error', text: error.message || 'An error occurred' });
         } finally {
             setLoading(false);
