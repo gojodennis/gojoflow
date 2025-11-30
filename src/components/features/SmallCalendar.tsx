@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useCalendarStore } from "@/store/calendar-store"
+import { events } from "@/mock-data/events"
+import { format } from "date-fns"
 
 interface SmallCalendarProps {
     currentDate?: Date
@@ -13,6 +17,8 @@ interface SmallCalendarProps {
 }
 
 export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateSelect }: SmallCalendarProps) {
+    const navigate = useNavigate()
+    const { goToDate } = useCalendarStore()
     const [displayDate, setDisplayDate] = useState(currentDate)
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const today = new Date()
@@ -42,6 +48,10 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
         const newSelectedDate = new Date(displayDate.getFullYear(), displayDate.getMonth(), day)
         setSelectedDate(newSelectedDate)
         onDateSelect?.(newSelectedDate)
+
+        // Update store and navigate to calendar
+        goToDate(newSelectedDate)
+        navigate('/calendar')
     }
 
     const days = []
@@ -50,6 +60,12 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
     }
     for (let i = 1; i <= daysInMonth; i++) {
         days.push(i)
+    }
+
+    // Helper to check if a day has events
+    const hasEvents = (day: number) => {
+        const dateStr = format(new Date(displayDate.getFullYear(), displayDate.getMonth(), day), "yyyy-MM-dd")
+        return events.some(event => event.date === dateStr)
     }
 
     return (
@@ -130,13 +146,15 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
                                 displayDate.getMonth() === selectedDate.getMonth() &&
                                 displayDate.getFullYear() === selectedDate.getFullYear()
 
+                            const dayHasEvents = day !== null && hasEvents(day)
+
                             return (
                                 <button
                                     key={index}
                                     onClick={() => day !== null && handleDateClick(day)}
                                     disabled={day === null}
                                     className={cn(
-                                        "flex items-center justify-center text-[11px] rounded-sm transition-all min-h-0",
+                                        "flex flex-col items-center justify-center text-[11px] rounded-sm transition-all min-h-0 relative",
                                         day === null && "invisible cursor-default",
                                         day !== null && "hover:bg-white/10 cursor-pointer",
                                         isToday && "bg-black dark:bg-white text-white dark:text-black font-bold border-2 border-black dark:border-white",
@@ -144,6 +162,12 @@ export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateS
                                     )}
                                 >
                                     {day}
+                                    {dayHasEvents && !isToday && (
+                                        <div className="absolute bottom-0.5 w-1 h-1 rounded-full bg-primary" />
+                                    )}
+                                    {dayHasEvents && isToday && (
+                                        <div className="absolute bottom-0.5 w-1 h-1 rounded-full bg-white dark:bg-black" />
+                                    )}
                                 </button>
                             )
                         })}

@@ -4,6 +4,7 @@ import { Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { type Task } from "@/components/providers/TaskContext"
+import { BeatingHeart } from "@/components/ui/beating-heart"
 
 interface EnergyStatsProps {
     tasks: Task[]
@@ -14,7 +15,7 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
 
     return (
         <div className={cn(
-            "flex flex-col justify-between h-full p-6",
+            "flex flex-col h-full p-6",
             "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border rounded-xl"
         )}>
             <div className="flex items-center gap-2 mb-4">
@@ -24,7 +25,7 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
                 </Badge>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1 flex flex-col">
                 <div className="flex items-end justify-between">
                     <div>
                         <div className="text-3xl font-bold tracking-tighter">
@@ -38,6 +39,9 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
                         <span className="text-xs font-bold">{activeTasks.length}</span>
                     </div>
                 </div>
+
+                {/* Animated beating heart - fills the available space */}
+                <BeatingHeart tasks={tasks} />
 
                 <div className="grid grid-cols-3 gap-2">
                     {(['high', 'medium', 'low'] as const).map((level) => (
