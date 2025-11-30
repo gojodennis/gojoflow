@@ -1,0 +1,8 @@
+﻿
+> gojoflow@0.0.0 build
+> tsc -b && vite build
+
+src/components/ui/beating-heart.tsx(3,1): error TS6192: All imports in import declaration are unused.
+src/components/ui/beating-heart.tsx(95,20): error TS2322: Type '{ children: string; jsx: true; }' is not assignable to type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+  Property 'jsx' does not exist on type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+src/components/ui/calendar-rac.tsx(5,10): error TS1484: 'ComponentProps' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.

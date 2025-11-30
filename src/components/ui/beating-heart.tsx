@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+
 import { Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { type Task } from "@/components/providers/TaskContext"
@@ -92,25 +92,7 @@ export function BeatingHeart({ tasks }: BeatingHeartProps) {
                 </div>
             </div>
 
-            <style jsx>{`
-                @keyframes heartbeat {
-                    0%, 100% {
-                        transform: scale(1);
-                    }
-                    10% {
-                        transform: scale(1.1);
-                    }
-                    20% {
-                        transform: scale(1);
-                    }
-                    30% {
-                        transform: scale(1.1);
-                    }
-                    40% {
-                        transform: scale(1);
-                    }
-                }
-            `}</style>
-        </div>
+
+        </div >
     )
 }
