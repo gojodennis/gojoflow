@@ -51,6 +51,12 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
                         <Clock className="h-3 w-3" />
                         <span>{task.duration}m</span>
                     </div>
+                    {task.source === 'google' && (
+                        <>
+                            <span>•</span>
+                            <span className="text-[10px] font-semibold text-blue-400">Google</span>
+                        </>
+                    )}
                 </div>
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

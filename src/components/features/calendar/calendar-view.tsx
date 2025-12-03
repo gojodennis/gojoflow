@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useCalendarStore } from "@/store/calendar-store";
 import { type CalendarEvent as Event } from "@/mock-data/events";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { EventSheet } from "./event-sheet";
 import { CalendarWeekHeader } from "./calendar-week-header";
 import { CalendarHoursColumn } from "./calendar-hours-column";
@@ -11,8 +12,17 @@ import { CalendarDayColumn } from "./calendar-day-column";
 import { INITIAL_SCROLL_OFFSET } from "./calendar-utils";
 
 export function CalendarView() {
-    const { goToNextWeek, goToPreviousWeek, getWeekDays, getCurrentWeekEvents } =
-        useCalendarStore();
+    const {
+        goToNextWeek,
+        goToPreviousWeek,
+        getWeekDays,
+        getCurrentWeekEvents,
+        initialize,
+        isAuthenticated,
+        isLoading,
+        signIn
+    } = useCalendarStore();
+
     const weekDays = getWeekDays();
     const events = getCurrentWeekEvents();
     const hoursScrollRef = useRef<HTMLDivElement>(null);
@@ -23,6 +33,10 @@ export function CalendarView() {
     const [sheetOpen, setSheetOpen] = useState(false);
 
     const today = new Date();
+
+    useEffect(() => {
+        initialize();
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -95,11 +109,18 @@ export function CalendarView() {
                 onOpenChange={setSheetOpen}
             />
             <div className="flex flex-col h-full overflow-x-auto w-full">
-                <CalendarWeekHeader
-                    weekDays={weekDays}
-                    onPreviousWeek={goToPreviousWeek}
-                    onNextWeek={goToNextWeek}
-                />
+                <div className="flex items-center justify-between p-4 border-b">
+                    <CalendarWeekHeader
+                        weekDays={weekDays}
+                        onPreviousWeek={goToPreviousWeek}
+                        onNextWeek={goToNextWeek}
+                    />
+                    {!isAuthenticated && (
+                        <Button onClick={signIn} variant="outline" size="sm">
+                            Connect Google Calendar
+                        </Button>
+                    )}
+                </div>
 
                 <div className="flex min-w-full w-max">
                     <CalendarHoursColumn

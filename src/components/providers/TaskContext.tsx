@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './AuthProvider'
+import { initGoogleClient, signInToGoogle, isSignedInToGoogle } from '@/lib/google-auth'
+
 
 export interface Task {
     id: string
@@ -12,7 +14,10 @@ export interface Task {
     completed: boolean
     created_at: string
     user_id?: string
+    source?: 'supabase' | 'google'
+    googleId?: string
 }
+
 
 interface TaskContextType {
     tasks: Task[]
@@ -22,7 +27,10 @@ interface TaskContextType {
     toggleTask: (id: string) => Promise<void>
     deleteTask: (id: string) => Promise<void>
     refreshTasks: () => Promise<void>
+    isGoogleAuthenticated: boolean
+    signInToGoogle: () => Promise<void>
 }
+
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined)
 
@@ -31,6 +39,20 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     const [tasks, setTasks] = useState<Task[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [isGoogleAuthenticated, setIsGoogleAuthenticated] = useState(false)
+
+    useEffect(() => {
+        const init = async () => {
+            try {
+                await initGoogleClient()
+                setIsGoogleAuthenticated(isSignedInToGoogle())
+            } catch (err) {
+                console.error('Failed to init Google Client', err)
+            }
+        }
+        init()
+    }, [])
+
 
     // Load tasks when user changes
     useEffect(() => {
@@ -64,23 +86,63 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     }
 
     const loadTasks = async () => {
-        if (!user) {
-            setLoading(false)
-            return
-        }
-
+        setLoading(true)
         try {
-            setLoading(true)
-            await cleanupOldTasks()
-            setError(null)
-            const { data, error: fetchError } = await supabase
-                .from('tasks')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
+            // 1. Load Supabase Tasks
+            let supabaseTasks: Task[] = []
+            if (user) {
+                await cleanupOldTasks()
+                const { data, error: fetchError } = await supabase
+                    .from('tasks')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
 
-            if (fetchError) throw fetchError
-            if (data) setTasks(data)
+                if (fetchError) throw fetchError
+                if (data) supabaseTasks = data.map(t => ({ ...t, source: 'supabase' }))
+            }
+
+            // 2. Load Google Tasks
+            let googleTasks: Task[] = []
+            if (isGoogleAuthenticated) {
+                try {
+                    const response = await window.gapi.client.tasks.tasklists.list()
+                    const taskLists = response.result.items || []
+
+                    if (taskLists.length > 0) {
+                        // Fetch tasks from the first list (usually 'My Tasks')
+                        // We could fetch from all, but let's start with the first one
+                        const listId = taskLists[0].id
+                        const tasksResponse = await window.gapi.client.tasks.tasks.list({
+                            tasklist: listId,
+                            showCompleted: true,
+                            showHidden: true,
+                        })
+
+                        const gTasks = tasksResponse.result.items || []
+                        googleTasks = gTasks.map((t: any) => ({
+                            id: t.id,
+                            title: t.title,
+                            energy_level: 'medium', // Default for Google Tasks
+                            duration: 30, // Default
+                            completed: t.status === 'completed',
+                            created_at: t.updated || new Date().toISOString(), // Use updated as created for sorting
+                            source: 'google',
+                            googleId: t.id,
+                        }))
+                    }
+                } catch (gErr) {
+                    console.error('Failed to load Google Tasks', gErr)
+                }
+            }
+
+            // 3. Merge and Sort
+            const allTasks = [...supabaseTasks, ...googleTasks].sort((a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            )
+
+            setTasks(allTasks)
+            setError(null)
         } catch (err) {
             console.error('Error loading tasks:', err)
             setError(err instanceof Error ? err.message : 'Failed to load tasks')
@@ -88,6 +150,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             setLoading(false)
         }
     }
+
 
     const createTask = async (taskData: Omit<Task, 'id' | 'created_at' | 'user_id'>) => {
         if (!user) return
@@ -99,6 +162,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             ...taskData,
             created_at: new Date().toISOString(),
             user_id: user.id,
+            source: 'supabase',
         }
 
         // Immediately update UI
@@ -119,7 +183,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
             // Replace optimistic task with real task from database
             if (data) {
-                setTasks(prev => prev.map(t => t.id === tempId ? data : t))
+                setTasks(prev => prev.map(t => t.id === tempId ? { ...data, source: 'supabase' } : t))
             }
         } catch (err) {
             console.error('Error creating task:', err)
@@ -130,6 +194,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             throw err
         }
     }
+
 
     const toggleTask = async (id: string) => {
         const task = tasks.find(t => t.id === id)
@@ -142,13 +207,34 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         ))
 
         try {
-            // Perform actual database update
-            const { error: updateError } = await supabase
-                .from('tasks')
-                .update({ completed: newCompletedState })
-                .eq('id', id)
+            if (task.source === 'google' && task.googleId) {
+                // Update Google Task
+                // We need the list ID. For now, we assume the first list again or we need to store listId in Task
+                // To keep it simple, we'll fetch lists to find the one containing this task or just try the first one
+                const response = await window.gapi.client.tasks.tasklists.list()
+                const taskLists = response.result.items || []
+                if (taskLists.length > 0) {
+                    const listId = taskLists[0].id
+                    await window.gapi.client.tasks.tasks.update({
+                        tasklist: listId,
+                        task: task.googleId,
+                        id: task.googleId,
+                        resource: {
+                            id: task.googleId,
+                            title: task.title,
+                            status: newCompletedState ? 'completed' : 'needsAction'
+                        }
+                    })
+                }
+            } else {
+                // Update Supabase Task
+                const { error: updateError } = await supabase
+                    .from('tasks')
+                    .update({ completed: newCompletedState })
+                    .eq('id', id)
 
-            if (updateError) throw updateError
+                if (updateError) throw updateError
+            }
         } catch (err) {
             console.error('Error toggling task:', err)
             setError(err instanceof Error ? err.message : 'Failed to update task')
@@ -160,6 +246,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             throw err
         }
     }
+
 
     const deleteTask = async (id: string) => {
         const taskToDelete = tasks.find(t => t.id === id)
@@ -196,6 +283,16 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         await loadTasks()
     }
 
+    const handleSignInToGoogle = async () => {
+        try {
+            await signInToGoogle()
+            setIsGoogleAuthenticated(true)
+            await loadTasks()
+        } catch (err) {
+            console.error('Failed to sign in to Google', err)
+        }
+    }
+
     return (
         <TaskContext.Provider value={{
             tasks,
@@ -205,6 +302,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             toggleTask,
             deleteTask,
             refreshTasks,
+            isGoogleAuthenticated,
+            signInToGoogle: handleSignInToGoogle,
         }}>
             {children}
         </TaskContext.Provider>
