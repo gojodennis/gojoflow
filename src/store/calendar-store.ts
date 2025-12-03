@@ -34,6 +34,8 @@ interface CalendarState {
         filter: "all" | "with-participants" | "without-participants"
     ) => void;
     events: CalendarEvent[];
+    addEvent: (event: CalendarEvent) => Promise<void>;
+    deleteEvent: (eventId: string) => Promise<void>;
     getCurrentWeekEvents: () => CalendarEvent[];
     getWeekDays: () => Date[];
 }
@@ -190,6 +192,97 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     setParticipantsFilter: (
         filter: "all" | "with-participants" | "without-participants"
     ) => set({ participantsFilter: filter }),
+
+    addEvent: async (event: CalendarEvent) => {
+        // Optimistic update - add event to local state immediately
+        set((state) => ({
+            events: [...state.events, event],
+        }));
+
+        try {
+            if (!isSignedInToGoogle()) {
+                throw new Error('Not authenticated with Google');
+            }
+
+            // Create event in Google Calendar
+            const response = await window.gapi.client.calendar.events.insert({
+                'calendarId': 'primary',
+                'resource': {
+                    'summary': event.title,
+                    'start': {
+                        'dateTime': `${event.date}T${event.startTime}:00`,
+                        'timeZone': event.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    },
+                    'end': {
+                        'dateTime': `${event.date}T${event.endTime}:00`,
+                        'timeZone': event.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    },
+                    'attendees': event.participants?.length > 0
+                        ? event.participants.map(email => ({ email }))
+                        : undefined,
+                    'hangoutLink': event.meetingLink,
+                },
+            });
+
+            const googleEvent = response.result;
+
+            // Update with real Google Calendar event ID
+            set((state) => ({
+                events: state.events.map(e =>
+                    e.id === event.id ? { ...e, id: googleEvent.id || e.id } : e
+                ),
+            }));
+
+            // Refresh events to ensure we have the latest from Google
+            await get().fetchEvents();
+        } catch (error) {
+            console.error('Failed to create event in Google Calendar', error);
+
+            // Rollback - remove the optimistically added event
+            set((state) => ({
+                events: state.events.filter(e => e.id !== event.id),
+                error: 'Failed to create event. Please try again.',
+            }));
+
+            throw error;
+        }
+    },
+
+    deleteEvent: async (eventId: string) => {
+        const eventToDelete = get().events.find(e => e.id === eventId);
+        if (!eventToDelete) return;
+
+        // Optimistic update - remove event from local state immediately
+        set((state) => ({
+            events: state.events.filter(e => e.id !== eventId),
+        }));
+
+        try {
+            if (!isSignedInToGoogle()) {
+                throw new Error('Not authenticated with Google');
+            }
+
+            // Delete event from Google Calendar
+            await (window.gapi.client.calendar.events as any).delete({
+                'calendarId': 'primary',
+                'eventId': eventId,
+            });
+
+            // Refresh events to ensure sync
+            await get().fetchEvents();
+
+        } catch (error) {
+            console.error('Failed to delete event from Google Calendar', error);
+
+            // Rollback - restore the event
+            set((state) => ({
+                events: [...state.events, eventToDelete],
+                error: 'Failed to delete event. Please try again.',
+            }));
+
+            throw error;
+        }
+    },
 
     getCurrentWeekEvents: () => {
         const state = get();

@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/AuthProvider"
-import { LogOut, MessageSquare } from "lucide-react"
+import { LogOut, MessageSquare, Calendar } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { FeedbackPopup } from "@/components/features/FeedbackPopup"
+import { useCalendarStore } from "@/store/calendar-store"
 
 export default function SettingsPage() {
     const { signOut, user } = useAuth()
@@ -35,6 +36,21 @@ export default function SettingsPage() {
         }
     }
 
+    const { isAuthenticated, signIn, fetchEvents, initialize, isLoading } = useCalendarStore()
+
+    useEffect(() => {
+        initialize()
+    }, [])
+
+    const handleGoogleConnect = async () => {
+        if (!isAuthenticated) {
+            await signIn()
+        } else {
+            await fetchEvents()
+            alert("Calendar events synced!")
+        }
+    }
+
     return (
         <div className="container mx-auto py-10 px-4 max-w-2xl">
             <h1 className="text-3xl font-bold mb-8">Settings</h1>
@@ -50,6 +66,28 @@ export default function SettingsPage() {
                         <Button variant="outline" onClick={signOut}>
                             <LogOut className="mr-2 h-4 w-4" />
                             Log Out
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="p-6 rounded-lg border bg-card text-card-foreground shadow-sm">
+                    <h2 className="text-xl font-semibold mb-4">Integrations</h2>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="font-medium">Google Calendar</p>
+                            <p className="text-sm text-muted-foreground">
+                                {isAuthenticated
+                                    ? "Connected to your primary calendar."
+                                    : "Import events from your Google Calendar."}
+                            </p>
+                        </div>
+                        <Button
+                            variant={isAuthenticated ? "secondary" : "default"}
+                            onClick={handleGoogleConnect}
+                            disabled={isLoading}
+                        >
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {isLoading ? "Syncing..." : (isAuthenticated ? "Sync Now" : "Connect")}
                         </Button>
                     </div>
                 </div>

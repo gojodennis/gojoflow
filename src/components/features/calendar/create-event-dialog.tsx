@@ -42,40 +42,53 @@ export function CreateEventDialog({
     const [timezone, setTimezone] = useState("");
     const [participants, setParticipants] = useState("");
     const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!title || !date || !startTime || !endTime) {
             return;
         }
 
+        setIsCreating(true);
+        setError(null);
+
         const participantsList = participants
             .split(",")
             .map((p) => p.trim())
             .filter((p) => p.length > 0);
 
-        const newEvent: Omit<Event, "id"> = {
+        const newEvent: Event = {
+            id: crypto.randomUUID(),
             title,
             date: format(date, "yyyy-MM-dd"),
             startTime,
             endTime,
-            participants: participantsList.length > 0 ? participantsList : ["user1"],
+            participants: participantsList,
             meetingLink: meetingLink || undefined,
             timezone: timezone || undefined,
         };
 
-        addEvent(newEvent);
-        goToDate(date);
+        try {
+            await addEvent(newEvent);
+            goToDate(date);
 
-        setTitle("");
-        setDate(new Date());
-        setStartTime("");
-        setEndTime("");
-        setMeetingLink("");
-        setTimezone("");
-        setParticipants("");
-        onOpenChange(false);
+            // Reset form
+            setTitle("");
+            setDate(new Date());
+            setStartTime("");
+            setEndTime("");
+            setMeetingLink("");
+            setTimezone("");
+            setParticipants("");
+            onOpenChange(false);
+        } catch (err) {
+            setError('Failed to create event. Please check your connection and try again.');
+        } finally {
+            setIsCreating(false);
+        }
     };
 
     return (
@@ -86,6 +99,9 @@ export function CreateEventDialog({
                     <DialogDescription>
                         Add a new event to your calendar. Fill in the details below.
                     </DialogDescription>
+                    {error && (
+                        <p className="text-sm text-destructive mt-2">{error}</p>
+                    )}
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
@@ -167,7 +183,7 @@ export function CreateEventDialog({
                             </Label>
                             <Input
                                 id="participants"
-                                placeholder="user1, user2, user3"
+                                placeholder="email1@example.com, email2@example.com"
                                 value={participants}
                                 onChange={(e) => setParticipants(e.target.value)}
                             />
@@ -199,10 +215,13 @@ export function CreateEventDialog({
                             type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
+                            disabled={isCreating}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit">Create Event</Button>
+                        <Button type="submit" disabled={isCreating}>
+                            {isCreating ? 'Creating...' : 'Create Event'}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

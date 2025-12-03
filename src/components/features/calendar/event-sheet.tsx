@@ -9,11 +9,8 @@ import {
     X,
     ArrowUpRight,
     CheckCircle2,
-    Bell,
     Calendar as CalendarIcon,
-    Phone,
     Users,
-    FilePlus,
     Link as LinkIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,13 +23,14 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { type CalendarEvent as Event } from "@/mock-data/events";
-import { useState } from "react";
+
 import { Kbd } from "@/components/ui/kbd";
 
 interface EventSheetProps {
     event: Event | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    onDelete?: (eventId: string) => void;
 }
 
 function formatTime(time: string): string {
@@ -53,44 +51,34 @@ function getMeetingCode(link?: string): string {
     if (match) {
         return match[0].slice(1).replace(/-/g, " ").toUpperCase();
     }
-    return "dra-jhgg-mvn";
+    return "";
 }
 
 function getParticipantName(participantId: string): string {
-    const names: Record<string, string> = {
-        user1: "James Brown",
-        user2: "Sophia Williams",
-        user3: "Arthur Taylor",
-        user4: "Emma Wright",
-        user5: "Leonel Ngoya",
-    };
-
-    return (
-        names[participantId] ||
-        participantId.charAt(0).toUpperCase() + participantId.slice(1)
-    );
+    // Extract name from email if it's an email format
+    if (participantId.includes('@')) {
+        const localPart = participantId.split('@')[0];
+        return localPart
+            .split(/[._-]/)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+    return participantId.charAt(0).toUpperCase() + participantId.slice(1);
 }
 
 function getParticipantEmail(participantId: string): string {
-    const emails: Record<string, string> = {
-        user1: "james11@gmail.com",
-        user2: "sophia.williams@gmail.com",
-        user3: "arthur@hotmail.com",
-        user4: "emma@outlook.com",
-        user5: "leonelngoya@gmail.com",
-    };
-
-    return emails[participantId] || `${participantId}@gmail.com`;
+    // If it's already an email, return it as-is
+    if (participantId.includes('@')) {
+        return participantId;
+    }
+    return `${participantId}@example.com`;
 }
 
 function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
 }
 
-export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
-    const [rsvpStatus, setRsvpStatus] = useState<"yes" | "no" | "maybe" | null>(
-        null
-    );
+export function EventSheet({ event, open, onOpenChange, onDelete }: EventSheetProps) {
 
     if (!event) return null;
 
@@ -100,37 +88,18 @@ export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
     const timezone = event.timezone || "GMT+7 Pontianak";
     const meetingCode = getMeetingCode(event.meetingLink);
 
-    const organizer = event.participants[0] || "user1";
-    const organizerName = getParticipantName(organizer);
-    const organizerEmail = getParticipantEmail(organizer);
-    const otherParticipants = event.participants.slice(1);
+    const organizer = event.participants[0];
+    const organizerEmail = organizer ? getParticipantEmail(organizer) : '';
 
-    const mockParticipants = [
-        {
-            id: organizer,
-            name: organizerName,
-            email: organizerEmail,
-            isOrganizer: true,
-            rsvp: "yes" as const,
-        },
-        ...otherParticipants.slice(0, 3).map((p) => ({
-            id: p,
-            name: getParticipantName(p),
-            email: getParticipantEmail(p),
-            isOrganizer: false,
-            rsvp: "yes" as const,
-        })),
-        {
-            id: "user5",
-            name: "Leonel Ngoya",
-            email: "leonelngoya@gmail.com",
-            isOrganizer: false,
-            rsvp: rsvpStatus || ("yes" as const),
-            isYou: true,
-        },
-    ];
+    const participants = event.participants.map((p: string, index: number) => ({
+        id: p,
+        name: getParticipantName(p),
+        email: getParticipantEmail(p),
+        isOrganizer: index === 0,
+        rsvp: "yes" as const,
+    }));
 
-    const yesCount = mockParticipants.filter((p) => p.rsvp === "yes").length;
+    const yesCount = participants.filter((p) => p.rsvp === "yes").length;
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -166,9 +135,17 @@ export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="size-8 hover:bg-muted"
+                                    className="size-8 hover:bg-muted hover:text-destructive"
+                                    onClick={() => {
+                                        if (event && onDelete) {
+                                            if (confirm('Are you sure you want to delete this event?')) {
+                                                onDelete(event.id);
+                                                onOpenChange(false);
+                                            }
+                                        }
+                                    }}
                                 >
-                                    <Trash2 className="size-4 text-muted-foreground" />
+                                    <Trash2 className="size-4 text-muted-foreground group-hover:text-destructive" />
                                 </Button>
                             </div>
                             <SheetClose asChild>
@@ -206,7 +183,7 @@ export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
                     <div className="flex-1 overflow-y-auto px-4 py-4">
                         <div className="flex flex-col gap-4 max-w-[512px] mx-auto">
                             <div className="flex flex-col gap-4">
-                                {mockParticipants.map((participant) => (
+                                {participants.map((participant) => (
                                     <div
                                         key={participant.id}
                                         className="flex items-start gap-3 relative"
@@ -228,57 +205,13 @@ export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
                                                                 Organizer
                                                             </span>
                                                         )}
-                                                        {participant.isYou && (
-                                                            <span className="text-[10px] font-medium text-foreground px-0.5 py-0.5 rounded-full">
-                                                                You
-                                                            </span>
-                                                        )}
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground leading-none">
-                                                        {participant.email}
-                                                    </p>
                                                 </div>
-                                                <CheckCircle2 className="size-3 text-green-500 shrink-0 absolute right-0 top-[17px]" />
+                                                <p className="text-xs text-muted-foreground leading-none">
+                                                    {participant.email}
+                                                </p>
                                             </div>
-                                            {participant.isYou && (
-                                                <div className="mt-3 flex gap-1.5 bg-muted/50 rounded-lg p-1.5">
-                                                    <Button
-                                                        variant={rsvpStatus === "yes" ? "default" : "ghost"}
-                                                        size="sm"
-                                                        className={`flex-1 h-[30px] text-xs font-medium ${rsvpStatus === "yes"
-                                                            ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm"
-                                                            : "text-muted-foreground"
-                                                            }`}
-                                                        onClick={() => setRsvpStatus("yes")}
-                                                    >
-                                                        Yes
-                                                    </Button>
-                                                    <Button
-                                                        variant={rsvpStatus === "no" ? "default" : "ghost"}
-                                                        size="sm"
-                                                        className={`flex-1 h-[30px] text-xs font-medium ${rsvpStatus === "no"
-                                                            ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm"
-                                                            : "text-muted-foreground"
-                                                            }`}
-                                                        onClick={() => setRsvpStatus("no")}
-                                                    >
-                                                        No
-                                                    </Button>
-                                                    <Button
-                                                        variant={
-                                                            rsvpStatus === "maybe" ? "default" : "ghost"
-                                                        }
-                                                        size="sm"
-                                                        className={`flex-1 h-[30px] text-xs font-medium ${rsvpStatus === "maybe"
-                                                            ? "bg-foreground text-background hover:bg-foreground/90 shadow-sm"
-                                                            : "text-muted-foreground"
-                                                            }`}
-                                                        onClick={() => setRsvpStatus("maybe")}
-                                                    >
-                                                        Maybe
-                                                    </Button>
-                                                </div>
-                                            )}
+                                            <CheckCircle2 className="size-3 text-green-500 shrink-0 absolute right-0 top-[17px]" />
                                         </div>
                                     </div>
                                 ))}
@@ -344,50 +277,24 @@ export function EventSheet({ event, open, onOpenChange }: EventSheetProps) {
                             )}
 
                             <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <div className="p-1">
-                                        <Bell className="size-4" />
-                                    </div>
-                                    <span>Reminder: 30min before</span>
-                                </div>
+
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <div className="p-1">
                                         <CalendarIcon className="size-4" />
                                     </div>
                                     <span>Organizer: {organizerEmail}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <div className="p-1">
-                                        <Phone className="size-4" />
-                                    </div>
-                                    <span>(US) +1 904-330-1131</span>
-                                </div>
+
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     <div className="p-1">
                                         <Users className="size-4" />
                                     </div>
                                     <span>
-                                        {mockParticipants.length} persons
+                                        {participants.length} persons
                                         <span className="mx-1">•</span>
                                         {yesCount} yes
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <div className="p-1">
-                                        <FilePlus className="size-4" />
-                                    </div>
-                                    <span>Notes from Organizer</span>
-                                </div>
-                            </div>
-
-                            <div className="pt-4 border-t border-border">
-                                <p className="text-xs text-muted-foreground leading-[1.6]">
-                                    During today&apos;s daily check-in, we had an in-depth
-                                    discussion about the MVP (Minimum Viable Product). We agreed
-                                    on the core features that need to be included, focusing on the
-                                    AI-conducted interviews and the memoir compilation
-                                    functionality.
-                                </p>
                             </div>
                         </div>
                     </div>

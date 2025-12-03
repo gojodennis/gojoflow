@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { useCalendarStore } from "@/store/calendar-store";
 import { type CalendarEvent as Event } from "@/mock-data/events";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+
 import { EventSheet } from "./event-sheet";
 import { CalendarWeekHeader } from "./calendar-week-header";
 import { CalendarHoursColumn } from "./calendar-hours-column";
@@ -18,9 +18,7 @@ export function CalendarView() {
         getWeekDays,
         getCurrentWeekEvents,
         initialize,
-        isAuthenticated,
-        isLoading,
-        signIn
+        deleteEvent,
     } = useCalendarStore();
 
     const weekDays = getWeekDays();
@@ -107,6 +105,7 @@ export function CalendarView() {
                 event={selectedEvent}
                 open={sheetOpen}
                 onOpenChange={setSheetOpen}
+                onDelete={deleteEvent}
             />
             <div className="flex flex-col h-full overflow-x-auto w-full">
                 <div className="flex items-center justify-between p-4 border-b">
@@ -115,11 +114,6 @@ export function CalendarView() {
                         onPreviousWeek={goToPreviousWeek}
                         onNextWeek={goToNextWeek}
                     />
-                    {!isAuthenticated && (
-                        <Button onClick={signIn} variant="outline" size="sm">
-                            Connect Google Calendar
-                        </Button>
-                    )}
                 </div>
 
                 <div className="flex min-w-full w-max">

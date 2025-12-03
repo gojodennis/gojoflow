@@ -40,6 +40,8 @@ export function CalendarControls() {
         participantsFilter,
         setEventTypeFilter,
         setParticipantsFilter,
+        isAuthenticated,
+        signIn,
     } = useCalendarStore();
     const [datePickerOpen, setDatePickerOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
@@ -115,6 +117,16 @@ export function CalendarControls() {
                 </Popover>
 
                 <div className="ml-auto flex items-center gap-2">
+                    {!isAuthenticated && (
+                        <Button
+                            onClick={signIn}
+                            variant="outline"
+                            size="sm"
+                            className="hidden md:flex gap-1.5"
+                        >
+                            Connect Google Calendar
+                        </Button>
+                    )}
                     <Button
                         size="sm"
                         className="hidden md:flex gap-1.5"

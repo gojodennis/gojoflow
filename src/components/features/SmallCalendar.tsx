@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useCalendarStore } from "@/store/calendar-store"
-import { events } from "@/mock-data/events"
 import { format } from "date-fns"
 
 interface SmallCalendarProps {
@@ -18,7 +17,7 @@ interface SmallCalendarProps {
 
 export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateSelect }: SmallCalendarProps) {
     const navigate = useNavigate()
-    const { goToDate } = useCalendarStore()
+    const { goToDate, events } = useCalendarStore()
     const [displayDate, setDisplayDate] = useState(currentDate)
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const today = new Date()

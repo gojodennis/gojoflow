@@ -181,9 +181,38 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
             if (insertError) throw insertError
 
+            // If authenticated with Google, add to Google Tasks
+            let googleId: string | undefined;
+            if (isGoogleAuthenticated) {
+                try {
+                    // Get the first task list (usually 'My Tasks')
+                    const response = await window.gapi.client.tasks.tasklists.list();
+                    const taskLists = response.result.items || [];
+
+                    if (taskLists.length > 0) {
+                        const listId = taskLists[0].id;
+                        const googleTask = await window.gapi.client.tasks.tasks.insert({
+                            tasklist: listId,
+                            resource: {
+                                title: taskData.title,
+                                notes: `Energy Level: ${taskData.energy_level}\nDuration: ${taskData.duration}m`,
+                            }
+                        });
+                        googleId = googleTask.result.id;
+                    }
+                } catch (gErr) {
+                    console.error('Failed to create task in Google Tasks', gErr);
+                    // We don't block the UI if Google sync fails, but maybe show a toast?
+                }
+            }
+
             // Replace optimistic task with real task from database
             if (data) {
-                setTasks(prev => prev.map(t => t.id === tempId ? { ...data, source: 'supabase' } : t))
+                setTasks(prev => prev.map(t => t.id === tempId ? {
+                    ...data,
+                    source: 'supabase',
+                    googleId: googleId // Store googleId if we synced it (though we might need to save this to DB if we want 2-way sync later)
+                } : t))
             }
         } catch (err) {
             console.error('Error creating task:', err)

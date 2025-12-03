@@ -80,7 +80,7 @@ export function EventCard({ event, style, onClick }: EventCardProps) {
                     {event.participants.length > 0 && (
                         <div className="flex items-center gap-1.5 mb-2">
                             <div className="flex -space-x-1.5">
-                                {event.participants.slice(0, 3).map((participant, idx) => (
+                                {event.participants.slice(0, 3).map((participant: string, idx: number) => (
                                     <Avatar
                                         key={idx}
                                         className="size-5 border-2 border-background"

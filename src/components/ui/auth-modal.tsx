@@ -60,6 +60,7 @@ export function AuthModal({ children, ...props }: AuthModalProps) {
     };
 
     const handleGoogleSignIn = async () => {
+        console.log('Starting Google Sign In...');
         try {
             setLoading(true);
             setMessage(null);
@@ -67,12 +68,18 @@ export function AuthModal({ children, ...props }: AuthModalProps) {
                 provider: 'google',
                 options: {
                     redirectTo: `${window.location.origin}/dashboard`,
+                    scopes: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/tasks',
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
                 },
             });
 
             if (error) throw error;
         } catch (error: any) {
             console.error('Supabase Auth Error:', error);
+            alert(`Sign In Error: ${error.message || JSON.stringify(error)}`);
             setMessage({ type: 'error', text: error.message || 'An error occurred' });
         } finally {
             setLoading(false);
