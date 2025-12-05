@@ -15,12 +15,12 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
 
     return (
         <div className={cn(
-            "flex flex-col h-full p-6",
-            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border rounded-xl"
+            "flex flex-col h-full p-5",
+            "bg-card border rounded-xl shadow-sm"
         )}>
             <div className="flex items-center gap-2 mb-4">
-                <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
-                    <Zap className="w-3 h-3 mr-1" />
+                <Badge className="bg-primary text-primary-foreground border-primary px-2 py-0.5 h-6">
+                    <Zap className="w-3 h-3 mr-1.5" />
                     ENERGY
                 </Badge>
             </div>
@@ -45,16 +45,16 @@ export function EnergyStats({ tasks }: EnergyStatsProps) {
 
                 <div className="grid grid-cols-3 gap-2">
                     {(['high', 'medium', 'low'] as const).map((level) => (
-                        <div key={level} className="bg-white/5 rounded-md p-2 text-center">
+                        <div key={level} className="border bg-card/50 rounded-md p-2 text-center">
                             <div className={cn(
                                 "text-lg font-bold",
-                                level === 'high' && "text-red-400",
-                                level === 'medium' && "text-yellow-400",
-                                level === 'low' && "text-green-400"
+                                level === 'high' && "text-foreground",
+                                level === 'medium' && "text-muted-foreground",
+                                level === 'low' && "text-muted-foreground opacity-70"
                             )}>
                                 {activeTasks.filter(t => t.energy_level === level).length}
                             </div>
-                            <div className="text-[10px] uppercase opacity-50">{level}</div>
+                            <div className="text-[10px] uppercase text-muted-foreground">{level}</div>
                         </div>
                     ))}
                 </div>

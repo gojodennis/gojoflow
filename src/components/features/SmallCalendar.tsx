@@ -5,9 +5,21 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { useCalendarStore } from "@/store/calendar-store"
-import { format } from "date-fns"
+import {
+    format,
+    startOfMonth,
+    endOfMonth,
+    startOfWeek,
+    endOfWeek,
+    eachDayOfInterval,
+    isSameMonth,
+    isSameDay,
+    isToday,
+    addMonths,
+    subMonths,
+    isWeekend
+} from "date-fns"
 
 interface SmallCalendarProps {
     currentDate?: Date
@@ -16,161 +28,139 @@ interface SmallCalendarProps {
 }
 
 export function SmallCalendar({ currentDate = new Date(), onMonthChange, onDateSelect }: SmallCalendarProps) {
-    const navigate = useNavigate()
-    const { goToDate, events } = useCalendarStore()
+    const { events } = useCalendarStore()
     const [displayDate, setDisplayDate] = useState(currentDate)
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-    const today = new Date()
-
-    const daysInMonth = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0).getDate()
-    const firstDayOfMonth = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1).getDay()
-
-    const monthName = displayDate.toLocaleString('default', { month: 'long' })
-    const currentMonthName = today.toLocaleString('default', { month: 'long' })
-    const year = displayDate.getFullYear()
-    const dayOfMonth = today.getDate()
-    const dayName = today.toLocaleDateString('default', { weekday: 'long' })
 
     const handlePrevMonth = () => {
-        const newDate = new Date(displayDate.getFullYear(), displayDate.getMonth() - 1, 1)
+        const newDate = subMonths(displayDate, 1)
         setDisplayDate(newDate)
         onMonthChange?.(newDate)
     }
 
     const handleNextMonth = () => {
-        const newDate = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 1)
+        const newDate = addMonths(displayDate, 1)
         setDisplayDate(newDate)
         onMonthChange?.(newDate)
     }
 
-    const handleDateClick = (day: number) => {
-        const newSelectedDate = new Date(displayDate.getFullYear(), displayDate.getMonth(), day)
-        setSelectedDate(newSelectedDate)
-        onDateSelect?.(newSelectedDate)
-
-        // Update store and navigate to calendar
-        goToDate(newSelectedDate)
-        navigate('/calendar')
+    const handleDateClick = (date: Date) => {
+        setSelectedDate(date)
+        onDateSelect?.(date)
     }
 
-    const days = []
-    for (let i = 0; i < firstDayOfMonth; i++) {
-        days.push(null)
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-        days.push(i)
-    }
+    // Generate calendar grid
+    const monthStart = startOfMonth(displayDate)
+    const monthEnd = endOfMonth(monthStart)
+    const startDate = startOfWeek(monthStart)
+    const endDate = endOfWeek(monthEnd)
 
-    // Helper to check if a day has events
-    const hasEvents = (day: number) => {
-        const dateStr = format(new Date(displayDate.getFullYear(), displayDate.getMonth(), day), "yyyy-MM-dd")
-        return events.some(event => event.date === dateStr)
+    const calendarDays = eachDayOfInterval({ start: startDate, end: endDate })
+
+    // Helper to get events for a day
+    const getDayEvents = (date: Date) => {
+        const dateStr = format(date, "yyyy-MM-dd")
+        return events.filter(event => event.date === dateStr)
     }
 
     return (
         <div className={cn(
-            "flex flex-col h-full p-6 gap-4",
-            "bg-gradient-to-br from-background/80 to-background/40 backdrop-blur-xl border rounded-xl"
+            "flex flex-col h-full p-5 gap-4",
+            "bg-card border rounded-xl shadow-sm"
         )}>
-            <div className="flex items-center gap-2 shrink-0">
-                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                    <CalendarIcon className="w-3 h-3 mr-1" />
-                    CALENDAR
-                </Badge>
+            {/* Header: Title & Navigation */}
+            <div className="flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2">
+                    <Badge className="bg-primary text-primary-foreground border-primary px-2 py-0.5 h-6">
+                        <CalendarIcon className="w-3 h-3 mr-1.5" />
+                        CALENDAR
+                    </Badge>
+                    <span className="text-sm font-semibold ml-1">
+                        {format(displayDate, "MMMM yyyy")}
+                    </span>
+                </div>
+                <div className="flex gap-0.5">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-accent rounded-md"
+                        onClick={handlePrevMonth}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 hover:bg-accent rounded-md"
+                        onClick={handleNextMonth}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
 
-            {/* Horizontal Layout: Date on Left, Calendar on Right */}
-            <div className="flex-1 flex gap-6 min-h-0">
-                {/* Left: Large Date Display */}
-                <div className="flex flex-col justify-center">
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        {currentMonthName}
-                    </div>
-                    <div className="text-6xl font-bold tracking-tighter tabular-nums leading-none mb-2">
-                        {dayOfMonth}
-                    </div>
-                    <div className="text-sm text-muted-foreground font-medium lowercase">
-                        {dayName}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                        {year}
-                    </div>
+            {/* Calendar Grid */}
+            <div className="flex-1 flex flex-col min-h-0">
+                {/* Weekday Headers */}
+                <div className="grid grid-cols-7 mb-2">
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                        <div key={i} className="text-[11px] text-muted-foreground text-center font-medium h-6 flex items-center justify-center">
+                            {day}
+                        </div>
+                    ))}
                 </div>
 
-                {/* Right: Calendar Grid */}
-                <div className="flex-1 flex flex-col gap-2 min-h-0">
-                    {/* Month Navigation */}
-                    <div className="flex items-center justify-between shrink-0">
-                        <div className="text-sm font-semibold tracking-tight">
-                            {monthName}
-                        </div>
-                        <div className="flex gap-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={handlePrevMonth}
+                {/* Days */}
+                <div className="grid grid-cols-7 flex-1 auto-rows-fr gap-1.5">
+                    {calendarDays.map((date, index) => {
+                        const isCurrentMonth = isSameMonth(date, monthStart)
+                        const isDateToday = isToday(date)
+                        const isDateSelected = selectedDate && isSameDay(date, selectedDate)
+                        const dayEvents = getDayEvents(date)
+                        const isWeekendDay = isWeekend(date)
+
+                        return (
+                            <button
+                                key={index}
+                                onClick={() => handleDateClick(date)}
+                                className={cn(
+                                    "relative flex flex-col items-center justify-start pt-1.5 rounded-md transition-all duration-200 group",
+                                    "hover:scale-105 hover:shadow-sm hover:z-10",
+                                    !isCurrentMonth && "opacity-30 hover:opacity-50",
+                                    isWeekendDay && isCurrentMonth && !isDateSelected && !isDateToday && "bg-accent/20",
+                                    isDateSelected && !isDateToday && "bg-primary/10 ring-1 ring-primary text-primary",
+                                    isDateToday && "bg-primary text-primary-foreground font-bold shadow-md ring-2 ring-primary/20",
+                                    !isDateSelected && !isDateToday && isCurrentMonth && "hover:bg-accent",
+                                )}
                             >
-                                <ChevronLeft className="h-3 w-3" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={handleNextMonth}
-                            >
-                                <ChevronRight className="h-3 w-3" />
-                            </Button>
-                        </div>
-                    </div>
+                                <span className={cn(
+                                    "text-[13px] leading-none",
+                                    !isCurrentMonth && "text-muted-foreground"
+                                )}>
+                                    {format(date, "d")}
+                                </span>
 
-                    {/* Weekday Headers */}
-                    <div className="grid grid-cols-7 gap-1 shrink-0">
-                        {['s', 'm', 't', 'w', 't', 'f', 's'].map((day, i) => (
-                            <div key={i} className="text-[10px] text-muted-foreground text-center font-medium lowercase">
-                                {day}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Calendar Days Grid */}
-                    <div className="grid grid-cols-7 grid-rows-6 gap-1 flex-1">
-                        {days.map((day, index) => {
-                            const isToday = day === today.getDate() &&
-                                displayDate.getMonth() === today.getMonth() &&
-                                displayDate.getFullYear() === today.getFullYear()
-
-                            const isSelected = selectedDate &&
-                                day === selectedDate.getDate() &&
-                                displayDate.getMonth() === selectedDate.getMonth() &&
-                                displayDate.getFullYear() === selectedDate.getFullYear()
-
-                            const dayHasEvents = day !== null && hasEvents(day)
-
-                            return (
-                                <button
-                                    key={index}
-                                    onClick={() => day !== null && handleDateClick(day)}
-                                    disabled={day === null}
-                                    className={cn(
-                                        "flex flex-col items-center justify-center text-[11px] rounded-sm transition-all min-h-0 relative",
-                                        day === null && "invisible cursor-default",
-                                        day !== null && "hover:bg-white/10 cursor-pointer",
-                                        isToday && "bg-black dark:bg-white text-white dark:text-black font-bold border-2 border-black dark:border-white",
-                                        isSelected && !isToday && "bg-primary/30 text-primary-foreground ring-1 ring-primary"
+                                {/* Event Indicators */}
+                                <div className="flex gap-0.5 mt-1 h-1.5 items-end">
+                                    {dayEvents.slice(0, 3).map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={cn(
+                                                "w-1 h-1 rounded-full",
+                                                isDateToday ? "bg-primary-foreground" : "bg-primary/70"
+                                            )}
+                                        />
+                                    ))}
+                                    {dayEvents.length > 3 && (
+                                        <div className={cn(
+                                            "w-0.5 h-0.5 rounded-full mb-0.5",
+                                            isDateToday ? "bg-primary-foreground" : "bg-primary/70"
+                                        )} />
                                     )}
-                                >
-                                    {day}
-                                    {dayHasEvents && !isToday && (
-                                        <div className="absolute bottom-0.5 w-1 h-1 rounded-full bg-primary" />
-                                    )}
-                                    {dayHasEvents && isToday && (
-                                        <div className="absolute bottom-0.5 w-1 h-1 rounded-full bg-white dark:bg-black" />
-                                    )}
-                                </button>
-                            )
-                        })}
-                    </div>
+                                </div>
+                            </button>
+                        )
+                    })}
                 </div>
             </div>
         </div>

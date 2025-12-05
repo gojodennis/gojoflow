@@ -19,7 +19,7 @@ export const initGoogleClient = async () => {
                 window.gapi.load('client', async () => {
                     try {
                         await window.gapi.client.init({
-                            // apiKey: GOOGLE_API_KEY, // Optional if only using OAuth for user data
+                            apiKey: GOOGLE_API_KEY, // Optional if only using OAuth for user data
                             discoveryDocs: DISCOVERY_DOCS,
                         });
 

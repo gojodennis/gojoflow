@@ -16,7 +16,6 @@ function TaskCard({ task, onToggle, onDelete, onFocus }: { task: Task, onToggle:
     return (
         <div className={cn(
             "group flex items-center gap-3 rounded-lg border p-3 transition-all hover:bg-accent/50",
-            "bg-background/40 backdrop-blur-sm",
             task.completed && "opacity-50"
         )}>
             <button
@@ -134,14 +133,9 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
     if (loading) {
         return (
             <div className={cn("relative h-full w-full overflow-hidden flex flex-col", className)}>
-                <div className="pointer-events-none absolute inset-0 -z-10">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
-                    <div className="absolute inset-0 bg-[size:20px_20px] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]" />
-                </div>
-
                 <div className={cn(
                     "flex-1 flex flex-col",
-                    "bg-background/60 backdrop-blur-xl border rounded-xl overflow-hidden shadow-2xl"
+                    "bg-card border rounded-xl overflow-hidden shadow-sm"
                 )}>
                     {/* Header Skeleton */}
                     <div className="relative p-6 border-b">
@@ -159,7 +153,7 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
                     {/* Task List Skeleton */}
                     <div className="flex-1 p-4 space-y-3">
                         {[1, 2, 3, 4, 5].map((i) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border bg-background/40">
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
                                 <Skeleton className="h-5 w-5 rounded-full" />
                                 <div className="flex-1 flex flex-col gap-2">
                                     <Skeleton className="h-4 w-3/4" />
@@ -188,46 +182,39 @@ export function TaskList({ onEnterFocus, className }: TaskListProps) {
 
     return (
         <div className={cn("relative h-full w-full overflow-hidden flex flex-col", className)}>
-            {/* Background Effects */}
-            <div className="pointer-events-none absolute inset-0 -z-10">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-background to-background opacity-50" />
-                <div className="absolute inset-0 bg-[size:20px_20px] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]" />
-            </div>
-
             <div className={cn(
                 "flex-1 flex flex-col",
-                "bg-background/60 backdrop-blur-xl border rounded-xl overflow-hidden shadow-2xl"
+                "bg-card border rounded-xl overflow-hidden shadow-sm"
             )}>
                 <div className="relative p-6 border-b">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                            <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 <Sparkles className="w-3 h-3 mr-1" />
                                 TODAY'S FOCUS
                             </Badge>
-                            <span className="hidden md:inline text-xs text-muted-foreground font-mono">
+                            <span className="hidden md:inline text-xs text-muted-foreground">
                                 {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
                             </span>
                         </div>
-                        <span className="md:hidden text-xs text-muted-foreground font-mono">
+                        <span className="md:hidden text-xs text-muted-foreground">
                             {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
                         </span>
-                        <Badge variant="outline" className="hidden md:flex font-mono text-xs">
+                        <Badge variant="outline" className="hidden md:flex text-xs">
                             {activeTasks.length} PENDING
                         </Badge>
                     </div>
 
                     <form onSubmit={handleCreateTask} className="relative group">
                         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <Plus className="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                            <Plus className="h-4 w-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                         </div>
                         <Input
                             name="title"
                             value={newTaskTitle}
                             onChange={(e) => setNewTaskTitle(e.target.value)}
                             placeholder="What needs to be done?"
-                            className="pl-10 h-12 bg-background/50 focus:border-primary/50 text-lg focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="pl-10 h-12 focus:border-primary text-base"
                             autoComplete="off"
                         />
                         <div className="absolute inset-y-0 right-2 flex items-center">

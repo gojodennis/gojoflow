@@ -35,6 +35,12 @@ const DashboardLayout = () => {
                             Calendar
                         </Link>
                         <Link
+                            to="/pomodoro"
+                            className={cn("transition-colors hover:text-primary/80", location.pathname === "/pomodoro" ? "text-primary" : "text-foreground")}
+                        >
+                            Pomodoro
+                        </Link>
+                        <Link
                             to="/settings"
                             className={cn("transition-colors hover:text-primary/80", location.pathname === "/settings" ? "text-primary" : "text-foreground")}
                         >
@@ -82,6 +88,13 @@ const DashboardLayout = () => {
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         Calendar
+                                    </Link>
+                                    <Link
+                                        to="/pomodoro"
+                                        className="p-2 hover:bg-secondary rounded-md transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                        Pomodoro
                                     </Link>
                                     <Link
                                         to="/settings"

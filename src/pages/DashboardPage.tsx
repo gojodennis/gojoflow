@@ -4,29 +4,18 @@ import { TaskList } from "@/components/features/TaskList"
 import { SmallCalendar } from "@/components/features/SmallCalendar"
 import { EnergyStats } from "@/components/features/EnergyStats"
 import { StatsCarousel } from "@/components/features/StatsCarousel"
-import { FocusMode } from "@/components/features/FocusMode"
 import { FeedbackPopup } from "@/components/features/FeedbackPopup"
+import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useTaskContext } from "@/components/providers/TaskContext"
 
 export default function DashboardPage() {
-    const { tasks, toggleTask } = useTaskContext()
+    const { tasks } = useTaskContext()
     const [currentDate, setCurrentDate] = useState<Date>(new Date())
-    const [focusTaskId, setFocusTaskId] = useState<string | null>(null)
+    const navigate = useNavigate()
 
-    if (focusTaskId) {
-        return (
-            <div className="h-full p-4 bg-background overflow-hidden">
-                <FocusMode
-                    onExit={() => setFocusTaskId(null)}
-                    onComplete={async () => {
-                        await toggleTask(focusTaskId)
-                        setFocusTaskId(null)
-                    }}
-                    duration={tasks.find(t => t.id === focusTaskId)?.duration}
-                />
-            </div>
-        )
+    const handleFocusTask = (taskId: string) => {
+        navigate(`/pomodoro?taskId=${taskId}`)
     }
 
     return (
@@ -42,7 +31,7 @@ export default function DashboardPage() {
                         />
                     </div>
                     <div className="shrink-0">
-                        <TaskList onEnterFocus={setFocusTaskId} className="min-h-[400px] h-auto" />
+                        <TaskList onEnterFocus={handleFocusTask} className="min-h-[400px] h-auto" />
                     </div>
                 </div>
 
@@ -50,7 +39,7 @@ export default function DashboardPage() {
                 <div className="hidden md:grid grid-cols-12 gap-4 h-full">
                     {/* Center: Task List (8 cols) */}
                     <div className="col-span-8 h-full overflow-hidden">
-                        <TaskList onEnterFocus={setFocusTaskId} />
+                        <TaskList onEnterFocus={handleFocusTask} />
                     </div>
 
                     {/* Right: Graphs (4 cols) */}
