@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { AuthModal } from "@/components/ui/auth-modal";
-import { initGoogleClient } from "@/lib/google-auth";
+import { initGoogleClient, storeGoogleToken } from "@/lib/google-auth";
 
 interface AuthContextType {
     session: Session | null;
@@ -38,17 +38,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSession(session);
             setUser(session?.user ?? null);
 
-            // Sync token on auth state change (e.g. sign in)
+            // Store tokens when we have them from OAuth callback
+            // provider_token and provider_refresh_token are only available during the callback
             if (session?.provider_token) {
-                const expiresAt = Date.now() + (3600 * 1000);
-                localStorage.setItem('google_oauth_token', JSON.stringify({
-                    access_token: session.provider_token,
-                    expires_at: expiresAt
-                }));
+                // Store both access token and refresh token (if available)
+                storeGoogleToken(
+                    session.provider_token,
+                    3600, // Default 1 hour expiry
+                    session.provider_refresh_token || undefined
+                );
 
-                // Ensure Google Client is ready
+                // Ensure Google Client is ready and set the token
                 await initGoogleClient();
-                if (window.gapi && window.gapi.client) {
+                if (window.gapi?.client) {
                     window.gapi.client.setToken({ access_token: session.provider_token });
                 }
             }
