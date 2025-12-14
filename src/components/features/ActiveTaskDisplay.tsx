@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { usePomodoroStore } from '@/store/pomodoro-store';
 import { useTaskContext } from '@/components/providers/TaskContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

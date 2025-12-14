@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Volume2, Clock, Settings2, Bell } from 'lucide-react';
+import { Volume2, Clock, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PomodoroSettingsProps {
