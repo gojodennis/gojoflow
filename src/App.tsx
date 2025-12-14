@@ -8,7 +8,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
-const DemoBackgroundPaths = lazy(() => import('./pages/DemoBackgroundPaths').then(module => ({ default: module.DemoBackgroundPaths })));
+
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
@@ -30,7 +30,7 @@ function App() {
           <Route index element={<LandingPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="pricing" element={<PricingPage />} />
-          <Route path="demo" element={<DemoBackgroundPaths />} />
+
         </Route>
 
         {/* Dashboard Pages - Protected */}

@@ -43,28 +43,7 @@ const Layout = () => {
                         >
                             Pricing
                         </Link>
-                        {user && (
-                            <>
-                                <Link
-                                    to="/dashboard"
-                                    className={cn("transition-colors hover:text-primary/80", location.pathname === "/dashboard" ? "text-primary" : "text-foreground")}
-                                >
-                                    Dashboard
-                                </Link>
-                                <Link
-                                    to="/calendar"
-                                    className={cn("transition-colors hover:text-primary/80", location.pathname === "/calendar" ? "text-primary" : "text-foreground")}
-                                >
-                                    Calendar
-                                </Link>
-                                <Link
-                                    to="/settings"
-                                    className={cn("transition-colors hover:text-primary/80", location.pathname === "/settings" ? "text-primary" : "text-foreground")}
-                                >
-                                    Settings
-                                </Link>
-                            </>
-                        )}
+
                     </nav>
 
                     {/* Right Side Actions */}
@@ -123,31 +102,7 @@ const Layout = () => {
                                     >
                                         Pricing
                                     </Link>
-                                    {user && (
-                                        <>
-                                            <Link
-                                                to="/dashboard"
-                                                className="p-2 hover:bg-secondary rounded-md transition-colors"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Dashboard
-                                            </Link>
-                                            <Link
-                                                to="/calendar"
-                                                className="p-2 hover:bg-secondary rounded-md transition-colors"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Calendar
-                                            </Link>
-                                            <Link
-                                                to="/settings"
-                                                className="p-2 hover:bg-secondary rounded-md transition-colors"
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                            >
-                                                Settings
-                                            </Link>
-                                        </>
-                                    )}
+
                                     {!user && (
                                         <div className="mt-2">
                                             <AuthModal>
