@@ -3,8 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
 import { PomodoroSettings } from './PomodoroSettings';
+import { cn } from '@/lib/utils';
 
-export function PomodoroControls() {
+interface PomodoroControlsProps {
+    orientation?: 'horizontal' | 'vertical';
+    className?: string;
+}
+
+export function PomodoroControls({ orientation = 'horizontal', className }: PomodoroControlsProps) {
     const { mode, completedSessions, settings, setMode } = usePomodoroStore();
     const [showSettings, setShowSettings] = useState(false);
 
@@ -16,16 +22,20 @@ export function PomodoroControls() {
 
     return (
         <>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t">
+            <div className={cn(
+                "flex items-center justify-between gap-4 transition-all",
+                orientation === 'horizontal' ? "flex-col sm:flex-row w-full p-4 border-t" : "flex-col gap-6",
+                className
+            )}>
                 {/* Mode Selector */}
-                <div className="flex items-center gap-2">
+                <div className={cn("flex items-center gap-2", orientation === 'vertical' && "flex-col w-full")}>
                     {modes.map((m) => (
                         <Button
                             key={m.key}
                             variant={mode === m.key ? 'default' : 'outline'}
                             size="sm"
                             onClick={() => setMode(m.key)}
-                            className="font-medium"
+                            className={cn("font-medium transition-all", orientation === 'vertical' && "w-full")}
                         >
                             {m.label}
                         </Button>
@@ -33,7 +43,7 @@ export function PomodoroControls() {
                 </div>
 
                 {/* Session Counter & Settings */}
-                <div className="flex items-center gap-4">
+                <div className={cn("flex items-center gap-4", orientation === 'vertical' && "flex-col-reverse w-full gap-6")}>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">Session:</span>
                         <span className="text-sm font-medium">
@@ -43,8 +53,9 @@ export function PomodoroControls() {
 
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="icon" // Kept as icon for consistency, but maybe could be a full button in vertical? Sticking to icon for now.
                         onClick={() => setShowSettings(true)}
+                        className={cn(orientation === 'vertical' && "h-10 w-10")}
                     >
                         <Settings className="h-5 w-5" />
                     </Button>

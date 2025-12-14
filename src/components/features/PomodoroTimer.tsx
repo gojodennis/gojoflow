@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { Play, Pause, RotateCcw, SkipForward, Minimize2, Maximize2 } from 'lucide-react';
 import { usePomodoroStore } from '@/store/pomodoro-store';
+import { useTaskContext } from '@/components/providers/TaskContext';
 import { soundManager } from '@/lib/pomodoro-sounds';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Button } from '@/components/ui/button';
@@ -19,17 +20,31 @@ export function PomodoroTimer() {
         resetTimer,
         skipSession,
         completeSession,
+        activeTaskId,
     } = usePomodoroStore();
 
     const { showNotification } = useNotifications();
+    const { toggleTask, tasks } = useTaskContext();
     const [sessionNotes, setSessionNotes] = useState('');
     const [isPiP, setIsPiP] = useState(false); // For In-App PiP
     const [pipWindow, setPipWindow] = useState<Window | null>(null); // For Document PiP
+
+    const handleStartTimer = () => {
+        if (mode === 'focus' && !activeTaskId) {
+            showNotification('No Task Selected', {
+                body: 'Please select a task to focus on before starting the timer.',
+                tag: 'no-task-selected',
+            });
+            return;
+        }
+        startTimer();
+    };
 
     // Define handleSessionComplete before useEffect
     const handleSessionComplete = async () => {
         const currentMode = usePomodoroStore.getState().mode;
         const currentSettings = usePomodoroStore.getState().settings;
+        const currentActiveTaskId = usePomodoroStore.getState().activeTaskId;
 
         // Play sound
         if (currentSettings.soundEnabled && currentSettings.soundPreset !== 'none') {
@@ -37,11 +52,23 @@ export function PomodoroTimer() {
             soundManager.playSessionEnd(currentSettings.soundPreset);
         }
 
+        // Auto-complete task if in focus mode
+        if (currentMode === 'focus' && currentActiveTaskId) {
+            const task = tasks.find(t => t.id === currentActiveTaskId);
+            if (task && !task.completed) {
+                await toggleTask(currentActiveTaskId);
+            }
+        }
+
         // Show notification
         if (currentSettings.notificationsEnabled) {
-            const modeText = currentMode === 'focus' ? 'Focus' : currentMode === 'short-break' ? 'Short Break' : 'Long Break';
+            const modeText = currentMode === 'focus' ? 'Focus Session' : currentMode === 'short-break' ? 'Short Break' : 'Long Break';
+            const bodyText = currentMode === 'focus'
+                ? 'Great job! Task marked as completed.'
+                : `Your ${modeText.toLowerCase()} has ended.`;
+
             showNotification(`${modeText} Complete!`, {
-                body: `Your ${modeText.toLowerCase()} session has ended.`,
+                body: bodyText,
                 tag: 'pomodoro-complete',
             });
         }
@@ -164,7 +191,7 @@ export function PomodoroTimer() {
     // Adjust radius based on PiP mode
     const isCompact = isPiP || !!pipWindow;
     const radius = isCompact ? 60 : 120;
-    const strokeWidth = isCompact ? 4 : 8;
+    const strokeWidth = isCompact ? 6 : 12; // Thicker stroke
     const normalizedRadius = radius - strokeWidth / 2;
     const circumference = normalizedRadius * 2 * Math.PI;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -193,12 +220,12 @@ export function PomodoroTimer() {
         <motion.div
             layout={!pipWindow} // Disable layout animation for portal as it causes issues
             className={cn(
-                "flex flex-col items-center justify-center transition-all duration-300 ease-in-out relative",
-                isPiP
-                    ? "fixed bottom-8 right-8 z-50 bg-background/95 backdrop-blur-sm shadow-2xl border rounded-3xl p-6 w-auto h-auto scale-90 origin-bottom-right"
+                "flex items-center justify-center transition-all duration-300 ease-in-out relative",
+                isCompact
+                    ? "flex-col p-6 space-y-4 fixed bottom-8 right-8 z-50 bg-background/95 backdrop-blur-sm shadow-2xl border rounded-3xl w-auto h-auto scale-90 origin-bottom-right"
                     : pipWindow
-                        ? "min-h-screen flex items-center justify-center bg-background p-4" // Styles for inside PiP window
-                        : "space-y-8 p-8"
+                        ? "min-h-screen flex items-center justify-center bg-background p-4 flex-col"
+                        : "w-full h-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 p-4 md:p-8"
             )}
         >
             {/* Toggle Button - Only show if NOT in Document PiP window (or show a close button there) */}
@@ -216,90 +243,27 @@ export function PomodoroTimer() {
                 </div>
             )}
 
-
-            {/* Mode Indicator */}
-            <motion.div
-                layout={!pipWindow}
-                className={cn(
-                    'px-6 py-2 rounded-full text-sm font-medium border',
-                    modeColors[mode],
-                    isCompact && "px-3 py-1 text-xs mb-2"
-                )}
-                animate={{
-                    backgroundColor: mode === 'focus' ? 'rgba(var(--primary), 0.05)' :
-                        mode === 'short-break' ? 'rgba(59, 130, 246, 0.05)' :
-                            'rgba(34, 197, 94, 0.05)',
-                    borderColor: mode === 'focus' ? 'rgba(var(--primary), 0.2)' :
-                        mode === 'short-break' ? 'rgba(59, 130, 246, 0.2)' :
-                            'rgba(34, 197, 94, 0.2)'
-                }}
-                transition={{ duration: 0.3 }}
-            >
-                {modeLabels[mode]}
-            </motion.div>
-
-            {/* Circular Timer */}
-            <div className="relative">
-                <svg
-                    height={radius * 2}
-                    width={radius * 2}
-                    className="transform -rotate-90"
-                >
-                    {/* Background circle */}
-                    <circle
-                        stroke="currentColor"
-                        className="text-muted"
-                        fill="transparent"
-                        strokeWidth={strokeWidth}
-                        r={normalizedRadius}
-                        cx={radius}
-                        cy={radius}
-                    />
-                    {/* Progress circle */}
-                    <motion.circle
-                        stroke="currentColor"
-                        className={modeStrokeColors[mode]}
-                        fill="transparent"
-                        strokeWidth={strokeWidth}
-                        strokeDasharray={circumference + ' ' + circumference}
-                        strokeDashoffset={strokeDashoffset}
-                        strokeLinecap="round"
-                        r={normalizedRadius}
-                        cx={radius}
-                        cy={radius}
-                        initial={{ strokeDashoffset: circumference }}
-                        animate={{ strokeDashoffset }}
-                        transition={{ duration: 0.5, ease: 'easeInOut' }}
-                    />
-                </svg>
-
-                {/* Time Display */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={cn(
-                        "font-mono font-bold tracking-tight transition-all",
-                        isCompact ? "text-3xl" : "text-6xl md:text-7xl"
-                    )}>
-                        {formatTime(timeRemaining)}
-                    </span>
-                </div>
-            </div>
-
-            {/* Control Buttons */}
-            <div className={cn("flex items-center gap-4", isCompact && "gap-2")}>
+            {/* Control Buttons - Left on Desktop, Bottom on Mobile/Compact */}
+            <div className={cn(
+                "flex items-center gap-4 z-10",
+                isCompact ? "order-2 flex-row gap-2" : "order-2 md:order-1 flex-row md:flex-col"
+            )}>
                 <Button
                     variant="outline"
                     size="icon"
                     onClick={resetTimer}
                     disabled={status === 'idle' && timeRemaining === totalDuration}
                     className={cn(isCompact ? "h-8 w-8" : "h-12 w-12")}
+                    title="Reset Timer"
                 >
                     <RotateCcw className={cn(isCompact ? "h-3 w-3" : "h-5 w-5")} />
                 </Button>
 
                 <Button
                     size="lg"
-                    onClick={status === 'running' ? pauseTimer : startTimer}
+                    onClick={status === 'running' ? pauseTimer : handleStartTimer}
                     className={cn("rounded-full", isCompact ? "h-10 w-10" : "h-16 w-16")}
+                    title={status === 'running' ? "Pause" : "Start"}
                 >
                     {status === 'running' ? (
                         <Pause className={cn(isCompact ? "h-4 w-4" : "h-6 w-6")} />
@@ -313,19 +277,88 @@ export function PomodoroTimer() {
                     size="icon"
                     onClick={skipSession}
                     className={cn(isCompact ? "h-8 w-8" : "h-12 w-12")}
+                    title="Skip Session"
                 >
                     <SkipForward className={cn(isCompact ? "h-3 w-3" : "h-5 w-5")} />
                 </Button>
             </div>
 
-            {/* Session Info */}
-            {!isCompact && (
-                <div className="text-sm text-muted-foreground text-center">
-                    {status === 'idle' && 'Press play to start'}
-                    {status === 'running' && 'Focus on your task'}
-                    {status === 'paused' && 'Timer paused'}
+            {/* Timer Display Group - Right on Desktop, Top on Mobile/Compact */}
+            <div className={cn(
+                "flex flex-col items-center justify-center relative",
+                isCompact ? "order-1" : "order-1 md:order-2 flex-1 max-h-full"
+            )}>
+                {/* Mode Indicator - Minimalist Text */}
+                <motion.div
+                    layout={!pipWindow}
+                    className={cn(
+                        'text-sm uppercase tracking-[0.2em] font-medium text-muted-foreground/80 mb-4',
+                        modeColors[mode],
+                        isCompact && "text-[10px] mb-2"
+                    )}
+                    transition={{ duration: 0.3 }}
+                >
+                    {modeLabels[mode]}
+                </motion.div>
+
+                {/* Circular Timer */}
+                <div className={cn("relative flex items-center justify-center mx-auto", !isCompact && "h-full w-auto aspect-square max-w-full")}>
+                    <svg
+                        viewBox={`0 0 ${radius * 2} ${radius * 2}`}
+                        className="w-full h-full transform -rotate-90 overflow-visible"
+                        preserveAspectRatio="xMidYMid meet"
+                    >
+                        {/* Background circle */}
+                        <circle
+                            stroke="currentColor"
+                            className="text-muted"
+                            fill="transparent"
+                            strokeWidth={strokeWidth}
+                            r={normalizedRadius}
+                            cx={radius}
+                            cy={radius}
+                        />
+                        {/* Progress circle */}
+                        <motion.circle
+                            stroke="currentColor"
+                            className={modeStrokeColors[mode]}
+                            fill="transparent"
+                            strokeWidth={strokeWidth}
+                            strokeDasharray={circumference + ' ' + circumference}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                            r={normalizedRadius}
+                            cx={radius}
+                            cy={radius}
+                            initial={{ strokeDashoffset: circumference }}
+                            animate={{ strokeDashoffset }}
+                            transition={{
+                                duration: progress === 0 ? 0 : 0.5,
+                                ease: 'easeInOut'
+                            }}
+                        />
+                    </svg>
+
+                    {/* Time Display */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <span className={cn(
+                            "font-mono font-bold tracking-tighter transition-all tabular-nums",
+                            isCompact ? "text-4xl" : "text-7xl md:text-8xl"
+                        )}>
+                            {formatTime(timeRemaining)}
+                        </span>
+                    </div>
                 </div>
-            )}
+
+                {/* Session Info */}
+                {!isCompact && (
+                    <div className="text-sm text-muted-foreground text-center mt-4 absolute -bottom-8">
+                        {status === 'idle' && 'Press play to start'}
+                        {status === 'running' && 'Focus on your task'}
+                        {status === 'paused' && 'Timer paused'}
+                    </div>
+                )}
+            </div>
         </motion.div>
     );
 

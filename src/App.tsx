@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import Layout from './components/Layout';
 import DashboardLayout from './components/DashboardLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -24,6 +25,7 @@ const PageLoader = () => (
 function App() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <Toaster richColors position="top-right" />
       <Routes>
         {/* Landing Pages */}
         <Route path="/" element={<Layout />}>

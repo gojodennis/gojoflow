@@ -1,57 +1,18 @@
-import { useState } from 'react';
-import { usePomodoroStore } from '@/store/pomodoro-store';
 import { useTaskContext } from '@/components/providers/TaskContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Clock } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Clock, Plus, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-export function PomodoroTaskSidebar() {
-    const { activeTaskId, setActiveTask, status, timeRemaining, settings, logCustomSession } = usePomodoroStore();
-    const { tasks, toggleTask } = useTaskContext();
-    const [showTaskSwitchPrompt, setShowTaskSwitchPrompt] = useState(false);
-    const [pendingTaskId, setPendingTaskId] = useState<string | null>(null);
+interface PomodoroTaskSidebarProps {
+    className?: string;
+}
 
-    const activeTask = tasks.find(t => t.id === activeTaskId);
+export function PomodoroTaskSidebar({ className }: PomodoroTaskSidebarProps) {
+    const { tasks, deleteTask } = useTaskContext();
     const activeTasks = tasks.filter(t => !t.completed);
-
-    const handleTaskChange = (newTaskId: string) => {
-        if (status === 'running' && activeTaskId && newTaskId !== activeTaskId) {
-            // Show prompt if switching mid-session
-            setPendingTaskId(newTaskId);
-            setShowTaskSwitchPrompt(true);
-        } else {
-            setActiveTask(newTaskId);
-        }
-    };
-
-    const confirmTaskSwitch = async (shouldLogTime: boolean) => {
-        if (pendingTaskId) {
-            if (shouldLogTime && activeTaskId) {
-                // Calculate time spent
-                const totalDuration = settings.focusDuration * 60;
-                const timeSpentSeconds = totalDuration - timeRemaining;
-                const timeSpentMinutes = timeSpentSeconds / 60;
-
-                if (timeSpentMinutes > 0.5) { // Only log if > 30 seconds
-                    await logCustomSession(activeTaskId, timeSpentMinutes, "Partial session (task switch)");
-                }
-            }
-
-            setActiveTask(pendingTaskId);
-            setPendingTaskId(null);
-            setShowTaskSwitchPrompt(false);
-        }
-    };
-
-    const handleCompleteTask = async () => {
-        if (activeTask) {
-            await toggleTask(activeTask.id);
-            setActiveTask(null);
-        }
-    };
 
     const energyColors = {
         low: 'bg-green-500/10 text-green-500 border-green-500/20',
@@ -60,102 +21,52 @@ export function PomodoroTaskSidebar() {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">Active Task</CardTitle>
-                <CardDescription>
-                    Select a task to focus on
-                </CardDescription>
+        <Card className={cn("h-full flex flex-col border-border/50 bg-card/50", className)}>
+            <CardHeader className="shrink-0 p-4 pb-2">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle className="text-base font-semibold">Tasks</CardTitle>
+                        <CardDescription className="text-xs">
+                            {activeTasks.length} pending
+                        </CardDescription>
+                    </div>
+                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-                {/* Task Selector */}
-                <Select
-                    value={activeTaskId || 'none'}
-                    onValueChange={handleTaskChange}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select a task" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="none">No task selected</SelectItem>
-                        {activeTasks.map((task) => (
-                            <SelectItem key={task.id} value={task.id}>
-                                <span className="truncate block max-w-[240px]">{task.title}</span>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-                {/* Active Task Card */}
-                {activeTask && (
-                    <div className="space-y-3 p-4 border rounded-lg bg-card">
-                        <div className="space-y-2">
-                            <h4 className="font-medium break-words leading-tight">{activeTask.title}</h4>
-                            <div className="flex items-center gap-2">
-                                <Badge variant="outline" className={energyColors[activeTask.energy_level]}>
-                                    {activeTask.energy_level} energy
-                                </Badge>
-                                <Badge variant="outline" className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    {activeTask.duration}m
-                                </Badge>
-                            </div>
+            <CardContent className="flex-1 overflow-hidden p-0 min-h-0 relative">
+                <div className="absolute inset-0 overflow-y-auto p-4 pt-0 space-y-3">
+                    {activeTasks.length === 0 && (
+                        <div className="text-center py-8 text-sm text-muted-foreground">
+                            No pending tasks.
                         </div>
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleCompleteTask}
-                            className="w-full"
-                        >
-                            <Check className="h-4 w-4 mr-2" />
-                            Mark Complete
-                        </Button>
-                    </div>
-                )}
-
-                {!activeTask && (
-                    <div className="text-sm text-muted-foreground text-center py-4">
-                        No task selected
-                    </div>
-                )}
-
-                {/* Task Switch Prompt */}
-                {showTaskSwitchPrompt && (
-                    <Alert>
-                        <AlertDescription className="space-y-3">
-                            <p className="text-sm">
-                                You're currently in a focus session. Do you want to log the time spent so far to the current task?
-                            </p>
-                            <div className="flex gap-2">
-                                <Button
-                                    size="sm"
-                                    variant="default"
-                                    onClick={() => confirmTaskSwitch(true)}
-                                    className="flex-1"
-                                >
-                                    Yes, Log & Switch
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => confirmTaskSwitch(false)}
-                                    className="flex-1"
-                                >
-                                    Just Switch
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => setShowTaskSwitchPrompt(false)}
-                                    className="flex-1"
-                                >
-                                    Cancel
-                                </Button>
+                    )}
+                    {activeTasks.map(task => (
+                        <div key={task.id} className="group flex items-start justify-between gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                            <div className="space-y-1 min-w-0">
+                                <p className="text-sm font-medium leading-none truncate">{task.title}</p>
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className={cn("text-[10px] px-1 py-0 h-4 font-normal", energyColors[task.energy_level])}>
+                                        {task.energy_level}
+                                    </Badge>
+                                    <span className="flex items-center text-[10px] text-muted-foreground">
+                                        <Clock className="mr-1 h-3 w-3" />
+                                        {task.duration}m
+                                    </span>
+                                </div>
                             </div>
-                        </AlertDescription>
-                    </Alert>
-                )}
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteTask(task.id)}
+                                className="h-6 w-6 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <Trash2 className="h-3 w-3" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
             </CardContent>
         </Card>
     );

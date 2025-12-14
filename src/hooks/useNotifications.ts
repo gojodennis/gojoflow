@@ -1,62 +1,28 @@
-import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export function useNotifications() {
-    const [permission, setPermission] = useState<NotificationPermission>('default');
-
-    useEffect(() => {
-        if ('Notification' in window) {
-            setPermission(Notification.permission);
-        }
-    }, []);
+    // Permission state is no longer needed for in-app toasts, but kept for interface compatibility if needed later
+    // or we can remove it. For now, we'll keep the signature but make it no-op.
 
     const requestPermission = async () => {
-        if (!('Notification' in window)) {
-            console.warn('This browser does not support notifications');
-            return false;
-        }
-
-        if (Notification.permission === 'granted') {
-            return true;
-        }
-
-        if (Notification.permission !== 'denied') {
-            const result = await Notification.requestPermission();
-            setPermission(result);
-            return result === 'granted';
-        }
-
-        return false;
+        return true; // Always "granted" for in-app toasts
     };
 
     const showNotification = (title: string, options?: NotificationOptions) => {
-        if (!('Notification' in window)) {
-            console.warn('This browser does not support notifications');
-            return;
-        }
+        // Map NotificationOptions to toast options
+        // options.body -> description
+        // options.tag -> id (for deduplication, though sonner handles this differently, we can use id)
 
-        if (Notification.permission === 'granted') {
-            new Notification(title, {
-                icon: '/favicon.ico',
-                badge: '/favicon.ico',
-                ...options,
-            });
-        } else if (Notification.permission === 'default') {
-            requestPermission().then((granted) => {
-                if (granted) {
-                    new Notification(title, {
-                        icon: '/favicon.ico',
-                        badge: '/favicon.ico',
-                        ...options,
-                    });
-                }
-            });
-        }
+        toast(title, {
+            description: options?.body,
+            id: options?.tag, // efficient for preventing duplicates if tag is provided
+        });
     };
 
     return {
-        permission,
+        permission: 'granted' as NotificationPermission,
         requestPermission,
         showNotification,
-        isSupported: 'Notification' in window,
+        isSupported: true,
     };
 }
